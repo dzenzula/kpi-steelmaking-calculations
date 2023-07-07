@@ -1,0 +1,32 @@
+mssql_data_bof:
+  server: KRR-TST-PAHWL02
+  user_id: EUROPE\aadzenzura
+  password: h)#X2Ubu04Qm2
+  database: KRR-PA-DEV-Development
+
+postgres_raw_data:
+  host: krr-sql-pgnode01
+  port: 5432
+  user: aadzenzura
+  password: h)#X2Ubu04Qm2
+  dbname: krr-pa-raw-data
+  sslmode: disable
+
+postgres_dev:
+  host: krr-sql-pgnode01
+  port: 5432
+  user: aadzenzura
+  password: h)#X2Ubu04Qm2
+  dbname: development
+  sslmode: disable
+
+type_ms: "mssql"
+type_pg: "postgres"
+
+querries:
+  consumption_mnlz: "SELECT * FROM public.cast_iron_consumption_mnlz('%s')"
+  consumption_ingot: "SELECT * FROM public.cast_iron_consumption_ingot('%s')"
+  meltdowns_casting: "SELECT * FROM public.number_of_meltdowns_casting('%s')"
+  meltdowns_onrs: "SELECT * FROM public.number_of_meltdowns_onrs('%s')"
+  scrap_consumption_mnlz: "SELECT * FROM public.scrap_consumption_mnlz('%s')"
+  scrap_consumption_ingot: "SELECT * FROM public.scrap_consumption_ingot('%s')"
