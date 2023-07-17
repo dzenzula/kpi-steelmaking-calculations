@@ -23,6 +23,16 @@ type Querries struct {
 	MeltdownsOnrs         string `yaml:"meltdowns_onrs"`
 	ScrapConsumptionMnlz  string `yaml:"scrap_consumption_mnlz"`
 	ScrapConsumptionIngot string `yaml:"scrap_consumption_ingot"`
+	SiInCastIron          string `yaml:"si_in_cast_iron"`
+	CastIronTemperature   string `yaml:"cast_iron_temperature"`
+	SContentPercentage    string `yaml:"s_content_percentage"`
+	MnlzProduction        string `yaml:"mnlz_production"`
+	IngotProduction       string `yaml:"ingot_production"`
+	O2ContentAtTheOutlet  string `yaml:"o2_content_at_the_outlet"`
+	GetLime               string `yaml:"get_lime"`
+	GetDolomite           string `yaml:"get_dolomite"`
+	GetAluminum           string `yaml:"get_aluminum"`
+	GetMixture            string `yaml:"get_mixture"`
 }
 
 type Config struct {
