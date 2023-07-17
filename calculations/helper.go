@@ -1,11 +1,10 @@
-package helper
+package calculations
 
 import (
 	"main/models"
 	"time"
 )
 
-// реализовать суммирование, среднее и подсчет
 func Sum(m []models.Query) float64 {
 	var res float64
 
@@ -34,7 +33,7 @@ func Len(m []models.Query) float64 {
 func GetDate() string {
 	currentTime := time.Now()
 	localTime := currentTime.Local()
-	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()-4, 0, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()+1, 0, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
 
 	return date
 }
