@@ -2,9 +2,18 @@ module main
 
 go 1.20
 
-require github.com/denisenkom/go-mssqldb v0.12.3
+require (
+	github.com/Masterminds/squirrel v1.5.4
+	github.com/Masterminds/structable v0.0.0-20170407152004-a1a302ef78ec
+	github.com/denisenkom/go-mssqldb v0.12.3
+)
 
-require golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
+require (
+	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
+	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.6 // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
+)
 
 require (
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect

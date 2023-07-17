@@ -8,6 +8,8 @@ import (
 	"main/logger"
 	"main/models"
 
+	"github.com/Masterminds/squirrel"
+	"github.com/Masterminds/structable"
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/lib/pq"
 )
@@ -59,6 +61,20 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 		}
 		query = append(query, data)
 	}
-	fmt.Println(query)
 	return query
+}
+
+func InsertReport(db *sql.DB, report models.Report) error {
+	runner := squirrel.NewStmtCacheProxy(db)
+
+	// Создание объекта structable для привязки значений структуры
+	//mydb := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question).RunWith(runner)
+
+	r := structable.New(runner, c.GlobalConfig.TypeMS).Bind("[dbo].[KpiReport]", report)
+	err := r.Insert()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
 }
