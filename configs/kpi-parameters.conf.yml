@@ -1,22 +1,22 @@
 mssql_data_bof:
   server: KRR-TST-PAHWL02
-  user_id: EUROPE\aadzenzura
-  password: h)#X2Ubu04Qm2
+  user_id: EUROPE\%mssql_user%
+  password: "%mssql_password%"
   database: KRR-PA-DEV-Development
 
 postgres_raw_data:
   host: krr-sql-pgnode01
   port: 5432
-  user: aadzenzura
-  password: h)#X2Ubu04Qm2
+  user: "%postgre_user%"
+  password: "%postgre_password%"
   dbname: krr-pa-raw-data
   sslmode: disable
 
 postgres_dev:
   host: krr-sql-pgnode01
   port: 5432
-  user: aadzenzura
-  password: h)#X2Ubu04Qm2
+  user: "%postgre_user%"
+  password: "%postgre_password%"
   dbname: development
   sslmode: disable
 
@@ -26,7 +26,6 @@ type_pg: "postgres"
 querries:
   consumption_mnlz: "SELECT * FROM public.cast_iron_consumption_mnlz('%s')"
   consumption_ingot: "SELECT * FROM public.cast_iron_consumption_ingot('%s')"
-  meltdowns_casting: "SELECT * FROM public.number_of_meltdowns_casting('%s')"
   meltdowns_onrs: "SELECT * FROM public.number_of_meltdowns_onrs('%s')"
   scrap_consumption_mnlz: "SELECT * FROM public.scrap_consumption_mnlz('%s')"
   scrap_consumption_ingot: "SELECT * FROM public.scrap_consumption_ingot('%s')"
@@ -39,45 +38,45 @@ querries:
   get_good_cast_iron: "SELECT * FROM public.get_good_cast_iron('%s', %d)"
 
 measurings:
-  fl_heat_lf: 1677851922
-  w_heat: 1677851923
-  w_iron: 1677851920
-  w_lom: 1677851924
-  w_heat_mnlz: 1677851927
-  si_iron: 1677851903
-  t_iron: 1677851904
-  p_iron: 532532
-  oxi_bof: 1677851909
-  w_caov: 1677851910
-  w_dolo: 1677851911
-  w_alrz: 1677851912
-  w_smesrz: 1677851913
-  s_iron: 1677851906
-  w_fesi: 1677851914
-  fesi65: 1677851934
-  w_simn: 1677851915
-  simn: 2345
-  w_femn78: 1687521180
-  w_femn88: 1687521326
-  w_femn95: 1687521418
-  femn78: 1687521765
-  femn88: 1687521870
-  fl_heat_cutoff_slag: 1687522409
-  fl_slop: 1687523132
-  shl_mgo: 1687524832
-  w_fecr: 1687525470
-  w_fecr025: 1687525565
-  w_fecr800: 1687525646
-  tm_treatment: 36234
-  n_lf: 36235
-  m1e: 36240
-  m2e: 36241
-  m3e: 36242
-  m4e: 36243
-  m5e: 36244
-  m6e: 36245
-  m7e: 36246
-  m8e: 36247
+  fl_heat_lf: 77851922
+  w_heat: 77851923
+  w_iron: 77851920
+  w_lom: 77851924
+  w_heat_mnlz: 77851927
+  si_iron: 77851903
+  t_iron: 77851904
+  p_iron: 53253288
+  oxi_bof: 77851909
+  w_caov: 77851910
+  w_dolo: 77851911
+  w_alrz: 77851912
+  w_smesrz: 77851913
+  s_iron: 77851906
+  w_fesi: 16772519
+  fesi65: 16758519
+  w_simn: 16778619
+  simn: 23456445
+  w_femn78: 16875211
+  w_femn88: 16875213
+  w_femn95: 16875214
+  femn78: 16875217
+  femn88: 16875218
+  fl_heat_cutoff_slag: 16875224
+  fl_slop: 16875231
+  shl_mgo: 16875248
+  w_fecr: 16875254
+  w_fecr025: 16875255
+  w_fecr800: 16875256
+  tm_treatment: 13456745
+  n_lf: 12375678
+  m1e: 13455740
+  m2e: 13455741
+  m3e: 13455742
+  m4e: 13455743
+  m5e: 13455744
+  m6e: 13455745
+  m7e: 13455746
+  m8e: 13455747
   w_cao_lf: 29897655
   w_cao90_lf: 29897656
   w_caf2_lf: 29897657
@@ -92,6 +91,7 @@ measurings:
   weighttotal: 29897671
   weight_grossstart: 29897672
   weight_grossend: 29897673
-  tm_between: 286754
-  ccm_begin: 82739
-  dtk: 13213213 #временный айди
+  tm_between: 13456799
+  ccm_begin: 13456787
+  dtk: 13456753
+  dtn: 13456754

@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/Masterminds/structable v0.0.0-20170407152004-a1a302ef78ec
 	github.com/denisenkom/go-mssqldb v0.12.3
+	gonum.org/v1/gonum v0.13.0
 )
 
 require (

@@ -7,39 +7,69 @@ import (
 	"main/database"
 	"main/logger"
 	"main/models"
+	"time"
 )
 
 var report = new(models.Report)
 
 func main() {
 	logger.InitLogger()
-	c.InitConfig("configuration/config.yaml")
+	c.InitConfig()
 
-	date := calc.GetDate()
+	for {
+		//waitUntilMidnight()
 
-	fmt.Println(date)
+		date := calc.GetDate()
+		msdev := database.ConnectMsDev()
+		pgdev := database.ConnectPgDev()
 
-	msdev := database.ConnectMsDev()
-	pgdev := database.ConnectPgDev()
+		report.Date = date
+		report.CastIronMelting = calc.ConsumptionOfCastIronForMelting(pgdev, date)
+		report.ScrapMelting = calc.ConsumptionOfScrapForMelting(pgdev, date)
+		report.SiInCastIron = calc.GetSiInCastIron(pgdev, date)
+		report.CastIronTemperature = calc.GetCastIronTemperature(pgdev, date)
+		report.GoodCastIron = calc.GetGoodCastIron(pgdev, date)
+		report.SContent = calc.GetSContent(pgdev, date)
+		report.MNLZMelting = calc.MNLZMeltingAvgWeight(pgdev, date)
+		report.IngotMelting = calc.IngotMeltingAvgWeight(pgdev, date)
+		report.O2Content = calc.O2Content(pgdev, date)
+		report.LimestoneFlow = calc.LimeFlow(pgdev, date)
+		report.DolomiteFlow = calc.DolomiteFlow(pgdev, date)
+		report.AluminumPreheating = calc.AluminumPreheating(pgdev, date)
+		report.MixMelting = calc.MixMelting(pgdev, date)
+		report.SiCC = calc.SiMnConsumption(pgdev, date)
+		report.SiModel = calc.FeSiModelConsumption(pgdev, date)
+		report.SiMnCC = calc.SiMnConsumption(pgdev, date)
+		report.SiMnModel = calc.SiMnModelConsumption(pgdev, date)
+		report.MnCC = calc.FeMnConsumption(pgdev, date)
+		report.MnModel = calc.FeMnModelConsumption(pgdev, date)
+		report.SlagTruncationRatio = calc.SlagTruncationRatio(pgdev, date)
+		report.SlagSkimmingRatio = calc.SlagSkimmingRatio(pgdev, date)
+		report.CCMeltingCycle = calc.CCMeltingCycleMinutes(pgdev, date)
+		report.FePercentageInSlag = calc.FePercentageInSlag(pgdev, date)
+		report.SlagSamplingPercentage = calc.SlagSamplingPercentage(pgdev, date)
+		report.GoodCCOutput = calc.GoodCCOutput(pgdev, date)
+		report.GoodCCMNLZOutput = calc.GoodCCMNLZOutput(pgdev, date)
+		report.GoodIngotOutput = calc.GoodCCIngotOutput(pgdev, date)
+		report.ProcessingTime = calc.ProcessingTime(pgdev, date)
+		report.ArcTime = calc.ArcTime(pgdev, date)
+		report.LimestoneConsumption = calc.LimestoneConsumption(pgdev, date)
+		report.FluorsparConsumption = calc.FluorsparConsumption(pgdev, date)
+		report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdev, date)
 
-	report.Date = "2023-07-14 01:00:00"
-	report.CastIronMelting = calc.ConsumptionOfCastIronForMelting(pgdev, "2023-07-14 00:00:00")
-	report.ScrapMelting = calc.ConsumptionOfScrapForMelting(pgdev, "2023-07-14 00:00:00")
-	report.SiInCastIron = calc.GetSiInCastIron(pgdev, "2023-07-14 00:00:00")
-	report.CastIronTemperature = calc.GetCastIronTemperature(pgdev, "2023-07-14 00:00:00")
-	report.SContent = calc.GetSContent(pgdev, "2023-07-14 00:00:00")
-	report.MNLZMelting = calc.MNLZMeltingAvgWeight(pgdev, "2023-07-14 00:00:00")
-	report.IngotMelting = calc.IngotMeltingAvgWeight(pgdev, "2023-07-14 00:00:00")
-	report.O2Content = calc.O2Content(pgdev, "2023-07-14 00:00:00")
-	report.LimestoneFlow = calc.LimeFlow(pgdev, "2023-07-14 00:00:00")
-	report.DolomiteFlow = calc.DolomiteFlow(pgdev, "2023-07-14 00:00:00")
-	report.AluminumPreheating = calc.AluminumPreheating(pgdev, "2023-07-14 00:00:00")
-	report.MixMelting = calc.MixMelting(pgdev, "2023-07-14 00:00:00")
+		//fmt.Println(report)
+		database.InsertReport(msdev, *report)
 
-	fmt.Println(report)
-	database.InsertReport(msdev, *report)
+		msdev.Close()
+		pgdev.Close()
+		logger.Info("Done!")
+	}
+}
 
-	defer msdev.Close()
-	defer pgdev.Close()
-	logger.Info("Done!")
+func waitUntilMidnight() {
+	currentTime := time.Now()
+	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 1, 0, 0, 0, currentTime.Location()).Add(24 * time.Hour)
+	timeToWait := targetTime.Sub(currentTime)
+	fmt.Println(timeToWait)
+	time.Sleep(timeToWait)
 }

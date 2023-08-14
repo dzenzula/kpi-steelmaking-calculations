@@ -7,6 +7,7 @@ type Report struct {
 	ScrapMelting           float64 `stbl:"ScrapMelting"`
 	SiInCastIron           float64 `stbl:"SiInCastIron"`
 	CastIronTemperature    float64 `stbl:"CastIronTemperature"`
+	GoodCastIron    	   float64 `stbl:"GoodCastIron"`
 	SContent               float64 `stbl:"SContent"`
 	MNLZMelting            float64 `stbl:"MNLZMelting"`
 	IngotMelting           float64 `stbl:"IngotMelting"`

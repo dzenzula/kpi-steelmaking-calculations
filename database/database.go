@@ -53,12 +53,21 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 
 	var query []models.Query
 	for rows.Next() {
+		var valueNullable sql.NullFloat64
 		var data models.Query
-		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &data.Value, &data.Quality, &data.BatchId)
+		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &valueNullable, &data.Quality, &data.BatchId)
 		if err != nil {
 			fmt.Println("Failed to scan row:", err)
 			continue
 		}
+
+		if valueNullable.Valid {
+			data.Value = &valueNullable.Float64
+		} else {
+			// Если значение null, устанавливаем значение Value в nil
+			data.Value = nil
+		}
+
 		query = append(query, data)
 	}
 	return query
