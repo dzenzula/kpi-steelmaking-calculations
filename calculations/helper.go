@@ -2,6 +2,7 @@ package calculations
 
 import (
 	"main/models"
+	"strconv"
 	"time"
 )
 
@@ -10,7 +11,8 @@ func Sum(m []models.Query) float64 {
 
 	for _, q := range m {
 		if q.Value != nil {
-			res += *q.Value
+			v, _ := strconv.ParseFloat(*q.Value, 64)
+			res += v
 		}
 	}
 
@@ -22,7 +24,8 @@ func Avg(m []models.Query) float64 {
 
 	for _, q := range m {
 		if q.Value != nil {
-			res += *q.Value
+			v, _ := strconv.ParseFloat(*q.Value, 64)
+			res += v
 		}
 	}
 	res = SafeDivision(res, float64(len(m)))
@@ -37,7 +40,7 @@ func Len(m []models.Query) float64 {
 func GetDate() string {
 	currentTime := time.Now()
 	localTime := currentTime.Local()
-	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()-6, 0, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()-1, 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
 
 	return date
 }
@@ -51,21 +54,26 @@ func SafeDivision(a, b float64) float64 {
 
 func AvgDiffDate(dtn []models.Query, dtk []models.Query) float64 {
 	differences := []float64{}
-	for i := range dtn {
-		unixTime1 := int64(*dtn[i].Value)
-		unixTime2 := int64(*dtk[i].Value)
 
-		time1 := time.Unix(unixTime1, 0)
-		time2 := time.Unix(unixTime2, 0)
+	layout := "2006-01-02 15:04:05Z"
+
+	for i := range dtn {
+		time1, _ := time.Parse(layout, *dtn[i].Value)
+		time2, _ := time.Parse(layout, *dtk[i].Value)
 
 		minutesDifference := time2.Sub(time1).Minutes()
 		differences = append(differences, minutesDifference)
+	}
+
+	if len(differences) == 0 {
+		return 0.0
 	}
 
 	totalDifferences := 0.0
 	for _, diff := range differences {
 		totalDifferences += diff
 	}
+
 	averageDifference := totalDifferences / float64(len(differences))
 
 	return averageDifference

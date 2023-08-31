@@ -17,19 +17,20 @@ type ConStringPG struct {
 }
 
 type Querries struct {
-	ConsumptionMnlz         string `yaml:"consumption_mnlz"`
-	ConsumptionIngot        string `yaml:"consumption_ingot"`
-	MeltdownsCasting        string `yaml:"meltdowns_casting"`
-	MeltdownsOnrs           string `yaml:"meltdowns_onrs"`
-	ScrapConsumptionMnlz    string `yaml:"scrap_consumption_mnlz"`
-	ScrapConsumptionIngot   string `yaml:"scrap_consumption_ingot"`
-	GetData                 string `yaml:"get_data"`
-	GetSlagTruncation       string `yaml:"get_slag_truncation"`
-	GetGreaterThanZeroData  string `yaml:"get_data_greater_than_zero"`
-	GetFerroalloysForMNLZ   string `yaml:"get_pheroalloy_mnlz"`
-	GetFerroalloysForIngots string `yaml:"get_pheroalloy_ingot"`
-	GetUpk                  string `yaml:"get_upk"`
-	GetGoodCastIron         string `yaml:"get_good_cast_iron"`
+	ConsumptionMnlz              string `yaml:"consumption_mnlz"`
+	ConsumptionIngot             string `yaml:"consumption_ingot"`
+	MeltdownsCasting             string `yaml:"meltdowns_casting"`
+	MeltdownsOnrs                string `yaml:"meltdowns_onrs"`
+	ScrapConsumptionMnlz         string `yaml:"scrap_consumption_mnlz"`
+	ScrapConsumptionIngot        string `yaml:"scrap_consumption_ingot"`
+	GetData                      string `yaml:"get_data"`
+	GetSlagTruncation            string `yaml:"get_slag_truncation"`
+	GetGreaterThanZeroData       string `yaml:"get_data_greater_than_zero"`
+	GetFerroalloysForMNLZ        string `yaml:"get_pheroalloy_mnlz"`
+	GetFerroalloysForIngots      string `yaml:"get_pheroalloy_ingot"`
+	GetUpk                       string `yaml:"get_upk"`
+	GetGoodCastIron              string `yaml:"get_good_cast_iron"`
+	GetInletTemperatureOxidation string `yaml:"get_inlet_temperature_oxidation"`
 }
 
 type Measurings struct {

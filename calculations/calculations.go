@@ -66,6 +66,9 @@ func ConsumptionOfCastIronForMelting(db *sql.DB, date string) float64 {
 	CPourCount := numberMeltdownsCasting(db, date)
 
 	ICCasting := SafeDivision((MNLZConsumption + BCConsumption), (SMeltCount + CPourCount))
+
+	fmt.Println("Расход чугуна = Потребление чугуна КЦ / Плавок по КЦ")
+	fmt.Printf("%f = %f / %f \n", ICCasting, (MNLZConsumption + BCConsumption), (SMeltCount + CPourCount))
 	return ICCasting
 }
 
@@ -77,6 +80,8 @@ func ConsumptionOfScrapForMelting(db *sql.DB, date string) float64 {
 	CPourCount := numberMeltdownsCasting(db, date)
 
 	ScrapMelting := SafeDivision((MNLZScrapConsumption + BCScrapConsumption), (SMeltCount + CPourCount))
+	fmt.Println("Расход лома = Потребление чугуна КЦ / Плавок по КЦ")
+	fmt.Printf("%f = %f / %f \n", ScrapMelting, (MNLZScrapConsumption + BCScrapConsumption), (SMeltCount + CPourCount))
 	return ScrapMelting
 }
 
@@ -85,6 +90,8 @@ func GetSiInCastIron(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.SiIron)
 	data := database.ExecuteQuery(db, q)
 	avg := Avg(data)
+
+	fmt.Println("Si в чугуне =", avg)
 	return avg
 }
 
@@ -98,6 +105,8 @@ func GetGoodCastIron(db *sql.DB, date string) float64 {
 	CPourCount := numberMeltdownsCasting(db, date)
 
 	res := SafeDivision(countGoodCI, (SMeltCount + CPourCount))
+	fmt.Println("Годного чугуна = Годного чугуна - кол-во записей / (Количество плавок OHPC + Количество плавок разливка )")
+	fmt.Printf("%f = %f / %f \n", res, countGoodCI, (SMeltCount + CPourCount))
 	return res
 }
 
@@ -106,6 +115,8 @@ func GetCastIronTemperature(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.TIron)
 	data := database.ExecuteQuery(db, q)
 	avg := Avg(data)
+
+	fmt.Println("Температура чугуна =", avg)
 	return avg
 }
 
@@ -114,10 +125,11 @@ func GetSContent(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.SIron)
 	data := database.ExecuteQuery(db, q)
 	avg := Avg(data)
+	fmt.Println("Содержание S =", avg)
 	return avg
 }
 
-// Производство МНЛЗ
+// Производство МНЛЗ,
 func productionMNLZSum(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.WHeatMnlz)
 	data := database.ExecuteQuery(db, q)
@@ -139,6 +151,8 @@ func MNLZMeltingAvgWeight(db *sql.DB, date string) float64 {
 	sMeltCount := numberMeltdownsOnrs(db, date)
 
 	res := SafeDivision(prodMNLZ, sMeltCount)
+	fmt.Println("Средний вес плавки MNLZ = Производство МНЛЗ / Количество плавок OHPC")
+	fmt.Printf("%f = %f / %f \n", res, prodMNLZ, sMeltCount)
 	return res
 }
 
@@ -148,6 +162,8 @@ func IngotMeltingAvgWeight(db *sql.DB, date string) float64 {
 	cPourCount := numberMeltdownsCasting(db, date)
 
 	res := SafeDivision(prodIngot, cPourCount)
+	fmt.Println("Средний вес плавки Слиток = Производство слитки / Количество плавок разливка")
+	fmt.Printf("%f = %f / %f \n", res, prodIngot, cPourCount)
 	return res
 }
 
@@ -156,6 +172,7 @@ func O2Content(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.OxiBof)
 	data := database.ExecuteQuery(db, q)
 	avg := Avg(data)
+	fmt.Println("Содержание О2 на выпуске =", avg)
 	return avg
 }
 
@@ -175,6 +192,8 @@ func LimeFlow(db *sql.DB, date string) float64 {
 
 	lime := getLime(db, date)
 	res := SafeDivision(lime, (CCprod * 1000))
+	fmt.Println("Известь на плавку = Известь вр. / (Производство КЦ * 1000)")
+	fmt.Printf("%f = %f / (%f * 1000) \n", res, lime, CCprod)
 	return res
 }
 
@@ -194,6 +213,8 @@ func DolomiteFlow(db *sql.DB, date string) float64 {
 
 	dolomite := getDolomite(db, date)
 	res := SafeDivision(dolomite, (KCprod * 1000))
+	fmt.Println("Доломит на плавку = Доло-мит / (Производство КЦ * 1000)")
+	fmt.Printf("%f = %f / (%f * 1000) \n", res, dolomite, KCprod)
 	return res
 }
 
@@ -213,6 +234,8 @@ func AluminumPreheating(db *sql.DB, date string) float64 {
 
 	alu := getAluminum(db, date)
 	res := SafeDivision(alu, CCprod)
+	fmt.Println("Алюминий на разогрев = Алюминий / Производство КЦ")
+	fmt.Printf("%f = %f / %f\n", res, alu, CCprod)
 	return res
 }
 
@@ -232,6 +255,8 @@ func MixMelting(db *sql.DB, date string) float64 {
 
 	CCprod := prodMNLZ + prodIngot
 	res := SafeDivision(mix, CCprod)
+	fmt.Println("Смесь на плавку = Смесь / Производство КЦ")
+	fmt.Printf("%f = %f / %f\n", res, mix, CCprod)
 	return res
 }
 
@@ -251,6 +276,8 @@ func FeSiConsumption(db *sql.DB, date string) float64 {
 
 	CCprod := prodMNLZ + prodIngot
 	res := SafeDivision((fesisum * 1000), CCprod)
+	fmt.Println("Si КЦ = Si КЦ всего * 1000 / Производство КЦ")
+	fmt.Printf("%f = %f * 1000 / %f\n", res, fesisum, CCprod)
 	return res
 }
 
@@ -268,6 +295,8 @@ func FeSiModelConsumption(db *sql.DB, date string) float64 {
 	fesi65sum := getSiModel(db, date)
 
 	res := SafeDivision(fesi65sum, prodMNLZ)
+	fmt.Println("Si по модели = FeSi65 расчет / Производство МНЛЗ")
+	fmt.Printf("%f = %f / %f\n", res, fesi65sum, prodMNLZ)
 	return res
 }
 
@@ -287,6 +316,8 @@ func SiMnConsumption(db *sql.DB, date string) float64 {
 
 	CCprod := prodMNLZ + prodIngot
 	res := SafeDivision((fesimnsum * 1000), CCprod)
+	fmt.Println("SiMn КЦ = SiMn КЦ всего * 1000 / Производство КЦ")
+	fmt.Printf("%f = %f * 1000 / %f\n", res, fesimnsum, CCprod)
 	return res
 }
 
@@ -304,6 +335,8 @@ func SiMnModelConsumption(db *sql.DB, date string) float64 {
 	simnmodelsum := getSiMnModel(db, date)
 
 	res := SafeDivision(simnmodelsum, prodMNLZ)
+	fmt.Println("SiMn по модели = SiMn расчет / Производство МНЛЗ")
+	fmt.Printf("%f = %f / %f\n", res, simnmodelsum, prodMNLZ)
 	return res
 }
 
@@ -333,11 +366,13 @@ func FeMnConsumption(db *sql.DB, date string) float64 {
 
 	CCprod := prodMNLZ + prodIngot
 	res := SafeDivision((mnCC * 1000), CCprod)
+	fmt.Println("Mn КЦ = Mn КЦ всего * 1000 / Производство КЦ")
+	fmt.Printf("%f = %f * 1000 / %f\n", res, mnCC, CCprod)
 	return res
 }
 
 // Mn расчет
-func getMnModel(db *sql.DB, date string) float64 {
+func getMnModel(db *sql.DB, date string) (float64, float64) {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.Femn78)
 	data := database.ExecuteQuery(db, q)
 	sum1 := Sum(data)
@@ -346,15 +381,17 @@ func getMnModel(db *sql.DB, date string) float64 {
 	data = database.ExecuteQuery(db, q)
 	sum2 := Sum(data)
 
-	return sum1 + sum2
+	return sum1, sum2
 }
 
 // Mn по модели
 func FeMnModelConsumption(db *sql.DB, date string) float64 {
 	prodMNLZ := productionMNLZSum(db, date)
-	mnmodel := getMnModel(db, date)
-
+	feMn78, femn88 := getMnModel(db, date)
+	mnmodel := feMn78 + femn88
 	res := SafeDivision(mnmodel, prodMNLZ)
+	fmt.Println("Mn по модели = (FeMn78 Расчет + FeMn88 Расчет) / Производство МНЛЗ")
+	fmt.Printf("%f = (%f + %f) / %f\n", res, feMn78, femn88, prodMNLZ)
 	return res
 }
 
@@ -373,6 +410,8 @@ func SlagTruncationRatio(db *sql.DB, date string) float64 {
 	MonokonCount := getMonokonTruncationCount(db, date)
 
 	res := SafeDivision(MonokonCount, (SMeltCount + CPourCount))
+	fmt.Println("Отсечка шлака = Количество признаков отсечки Монокон / (Количество плавок OHPC + Количество плавок разливка)")
+	fmt.Printf("%f = %f / (%f + %f)\n", res, MonokonCount, SMeltCount, CPourCount)
 	return res
 }
 
@@ -391,6 +430,8 @@ func SlagSkimmingRatio(db *sql.DB, date string) float64 {
 	SlagSkimmingCount := getSkimmingFlagCount(db, date)
 
 	res := SafeDivision(SlagSkimmingCount, (SMeltCount + CPourCount))
+	fmt.Println("Скачивание шлака = Количество признаков скачки / (Количество плавок OHPC + Количество плавок разливка)")
+	fmt.Printf("%f = %f / (%f + %f)\n", res, SlagSkimmingCount, SMeltCount, CPourCount)
 	return res
 }
 
@@ -414,6 +455,8 @@ func CCMeltingCycleMinutes(db *sql.DB, date string) float64 {
 	dtk := getDtk(db, date)
 
 	res := AvgDiffDate(dtn, dtk)
+	fmt.Println("Длительность плавки =  конец плавки - начало плавки")
+	fmt.Printf("Средняя длительность плавки = %f\n", res)
 	return res
 }
 
@@ -422,6 +465,7 @@ func FePercentageInSlag(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.ShlMgo)
 	data := database.ExecuteQuery(db, q)
 	avg := Avg(data)
+	fmt.Printf("Fe в шлаке = %f\n", avg)
 	return avg
 }
 
@@ -439,6 +483,8 @@ func SlagSamplingPercentage(db *sql.DB, date string) float64 {
 	SlagCount := getFePercentageInSlagCount(db, date)
 
 	res := SafeDivision(SlagCount, (SMeltCount+CPourCount)) * 100
+	fmt.Println("Кол-во шлаков = MgO / (Количество плавок OHPC + Количество плавок разливка) * 100")
+	fmt.Printf("%f = %f / (%f + %f) * 100\n", res, SlagCount, SMeltCount, CPourCount)
 	return res
 }
 
@@ -618,6 +664,8 @@ func GoodCCOutput(db *sql.DB, date string) float64 {
 	BCScrapConsumption := scrapConsumptionIngotSum(db, date)
 
 	res := SafeDivision(prodCC, (CCIronConsumption + MNLZScrapConsumption + BCScrapConsumption + ferroalloys/1000))
+	fmt.Println("Выход годного КЦ = Производство КЦ / (Потребление чугуна КЦ + Потребление лома МНЛЗ + Потребление лома Слиток + всего феросплавов КЦ /1000)")
+	fmt.Printf("%f = %f / (%f + %f + %f + %f / 1000)\n", res, prodCC, CCIronConsumption, MNLZScrapConsumption, BCScrapConsumption, ferroalloys)
 	return res
 }
 
@@ -628,6 +676,8 @@ func GoodCCMNLZOutput(db *sql.DB, date string) float64 {
 	ferroalloysMNLZ := ferroalloysOnMNLZ(db, date)
 
 	res := SafeDivision(MNLZConsumption, (MNLZScrapConsumption + ferroalloysMNLZ/1000))
+	fmt.Println("Выход годного КЦ МНЛЗ = Потребление чугуна МНЛЗ / (Потребление лома МНЛЗ + всего феросплавов для МНЛЗ / 1000)")
+	fmt.Printf("%f = %f / (%f + %f / 1000)\n", res, MNLZConsumption, MNLZScrapConsumption, ferroalloysMNLZ)
 	return res
 }
 
@@ -639,6 +689,8 @@ func GoodCCIngotOutput(db *sql.DB, date string) float64 {
 	BCScrapConsumption := scrapConsumptionIngotSum(db, date)
 
 	res := SafeDivision(prodIngot, (BCConsumption + BCScrapConsumption + ferroalloysIngot))
+	fmt.Println("Выход годного Слиток = Производство слитки / (Потребление чугуна слитки + Потребление лома Слиток + всего феросплавов для слитка))")
+	fmt.Printf("%f = %f / (%f + %f + %f)\n", res, prodIngot, BCConsumption, BCScrapConsumption, ferroalloysIngot)
 	return res
 }
 
@@ -658,6 +710,8 @@ func ProcessingTime(db *sql.DB, date string) float64 {
 		res = res + pTime
 	}
 	res = res / 3
+	fmt.Println("Время обработки = (УПК1 + УПК2 + УПК3) / 3")
+	fmt.Printf("Время обработки = %f\n", res)
 	return res
 }
 
@@ -690,6 +744,7 @@ func ArcTime(db *sql.DB, date string) float64 {
 
 	calc := floats.Sum(res)
 	calc = calc / 3
+	fmt.Printf("Время дуги = %f\n", calc)
 	return calc
 }
 
@@ -716,6 +771,8 @@ func LimestoneConsumption(db *sql.DB, date string) float64 {
 	CaOhigh := getCaOHighCalcium(db, date)
 
 	res := SafeDivision((CaO + CaOhigh), prodMNLZ)
+	fmt.Println("Известь = Известь / Производство МНЛЗ")
+	fmt.Printf("%f = %f / %f\n", res, (CaO + CaOhigh), prodMNLZ)
 	return res
 }
 
@@ -751,4 +808,29 @@ func ArgonOxygenConsumption(db *sql.DB, date string) float64 {
 
 	res := SafeDivision(apk, prodMNLZ)
 	return res
+}
+
+// Температура по приходу
+func InletTemperature(db *sql.DB, date string) float64 {
+	res := 0.0
+	for i := 1; i < 4; i++ {
+		q := fmt.Sprintf(c.GlobalConfig.Querries.GetInletTemperatureOxidation, date, c.GlobalConfig.Measurings.T1, i)
+		data := database.ExecuteQuery(db, q)
+		avg := Avg(data)
+		res = res + avg
+	}
+
+	return res / 3
+}
+
+// Окисленность по приходу
+func InletOxidation(db *sql.DB, date string) float64 {
+	res := 0.0
+	for i := 1; i < 4; i++ {
+		q := fmt.Sprintf(c.GlobalConfig.Querries.GetInletTemperatureOxidation, date, c.GlobalConfig.Measurings.O21, i)
+		data := database.ExecuteQuery(db, q)
+		avg := Avg(data)
+		res = res + avg
+	}
+	return res / 3
 }

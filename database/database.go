@@ -7,6 +7,7 @@ import (
 	c "main/configuration"
 	"main/logger"
 	"main/models"
+	"sync"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/Masterminds/structable"
@@ -14,11 +15,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var (
+	msDevConn *sql.DB    // Глобальная переменная для подключения к MS SQL
+	pgDevConn *sql.DB    // Глобальная переменная для подключения к PostgreSQL
+	connMutex sync.Mutex // Мьютекс для обеспечения безопасности доступа к подключениям
+)
+
 func ConnectMsDev() *sql.DB {
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.GlobalConfig.ConStringMsDev.Server, c.GlobalConfig.ConStringMsDev.UserID, c.GlobalConfig.ConStringMsDev.Password, c.GlobalConfig.ConStringMsDev.Database)
+
+	connMutex.Lock()
+	defer connMutex.Unlock()
+
 	conn, conErr := sql.Open(c.GlobalConfig.TypeMS, connString)
 	if conErr != nil {
 		logger.Error("Error opening database connection:", conErr.Error())
+		return nil
 	}
 
 	pingErr := conn.Ping()
@@ -26,14 +38,21 @@ func ConnectMsDev() *sql.DB {
 		log.Fatal(pingErr.Error())
 	}
 
-	return conn
+	msDevConn = conn
+
+	return msDevConn
 }
 
 func ConnectPgDev() *sql.DB {
 	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.GlobalConfig.ConStringPgDev.Host, c.GlobalConfig.ConStringPgDev.Port, c.GlobalConfig.ConStringPgDev.User, c.GlobalConfig.ConStringPgDev.Password, c.GlobalConfig.ConStringPgDev.DBName, c.GlobalConfig.ConStringPgDev.SSLMode)
+
+	connMutex.Lock()
+	defer connMutex.Unlock()
+
 	conn, conErr := sql.Open(c.GlobalConfig.TypePG, connString)
 	if conErr != nil {
 		logger.Error("Error opening database connection:", conErr.Error())
+		return nil
 	}
 
 	pingErr := conn.Ping()
@@ -41,7 +60,9 @@ func ConnectPgDev() *sql.DB {
 		logger.Fatal(pingErr.Error())
 	}
 
-	return conn
+	pgDevConn = conn
+
+	return pgDevConn
 }
 
 func ExecuteQuery(db *sql.DB, q string) []models.Query {
@@ -53,7 +74,7 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 
 	var query []models.Query
 	for rows.Next() {
-		var valueNullable sql.NullFloat64
+		var valueNullable sql.NullString
 		var data models.Query
 		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &valueNullable, &data.Quality, &data.BatchId)
 		if err != nil {
@@ -62,7 +83,7 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 		}
 
 		if valueNullable.Valid {
-			data.Value = &valueNullable.Float64
+			data.Value = &valueNullable.String
 		} else {
 			// Если значение null, устанавливаем значение Value в nil
 			data.Value = nil

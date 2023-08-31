@@ -10,12 +10,14 @@ import (
 )
 
 var (
-	GlobalConfig models.Config
+	GlobalConfig models.Config = initConfig()
 )
 
-func InitConfig() {
-	configFiles := []string{"configuration/config.yaml", "config.yaml", "config/kpi-parameters.conf.yml"}
+func initConfig() models.Config {
+	configFiles := []string{"configuration/config.yml", "configs/kpi-parameters.conf.yml", "config.yaml"}
 	var configName string
+	var config models.Config
+
 	for _, configFile := range configFiles {
 		if _, err := os.Stat(configFile); err == nil {
 			configName = configFile
@@ -28,8 +30,10 @@ func InitConfig() {
 		logger.Fatal(err)
 	}
 
-	err = yaml.Unmarshal(data, &GlobalConfig)
+	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return config
 }

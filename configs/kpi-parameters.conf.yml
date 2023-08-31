@@ -36,6 +36,7 @@ querries:
   get_pheroalloy_ingot: "SELECT * FROM public.get_pheroalloy_ingot('%s', %d)"
   get_upk: "SELECT * FROM public.get_upk('%s', %d, %d)"
   get_good_cast_iron: "SELECT * FROM public.get_good_cast_iron('%s', %d)"
+  get_inlet_temperature_oxidation: "SELECT * FROM public.get_inlet_temperature_oxidation('%s', %d, %d)"
 
 measurings:
   fl_heat_lf: 77851922

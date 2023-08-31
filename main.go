@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	calc "main/calculations"
-	c "main/configuration"
 	"main/database"
 	"main/logger"
 	"main/models"
@@ -14,7 +13,6 @@ var report = new(models.Report)
 
 func main() {
 	logger.InitLogger()
-	c.InitConfig()
 
 	for {
 		//waitUntilMidnight()
@@ -56,8 +54,12 @@ func main() {
 		report.LimestoneConsumption = calc.LimestoneConsumption(pgdev, date)
 		report.FluorsparConsumption = calc.FluorsparConsumption(pgdev, date)
 		report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdev, date)
+		report.ElectricityConsumption = 0.0
+		report.ElectrodeConsumption = 0.0
+		report.InletTemperature = calc.InletTemperature(pgdev, date)
+		report.InletOxidation = calc.InletOxidation(pgdev, date)
 
-		//fmt.Println(report)
+		fmt.Println(date)
 		database.InsertReport(msdev, *report)
 
 		msdev.Close()
@@ -68,7 +70,7 @@ func main() {
 
 func waitUntilMidnight() {
 	currentTime := time.Now()
-	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 1, 0, 0, 0, currentTime.Location()).Add(24 * time.Hour)
+	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 20, 0, 0, 0, currentTime.Location()).Add(24 * time.Hour)
 	timeToWait := targetTime.Sub(currentTime)
 	fmt.Println(timeToWait)
 	time.Sleep(timeToWait)

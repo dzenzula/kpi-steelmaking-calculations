@@ -3,7 +3,7 @@ package models
 type Query struct {
 	IdMeasuring int
 	TimeStamp   string
-	Value       *float64
+	Value       *string
 	Quality     int
-	BatchId     int
+	BatchId     string
 }
