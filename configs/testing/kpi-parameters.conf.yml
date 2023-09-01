@@ -1,18 +1,10 @@
-mssql_data_bof:
+mssql_database:
   server: KRR-TST-PAHWL02
   user_id: EUROPE\%mssql_user%
   password: "%mssql_password%"
   database: KRR-PA-DEV-Development
 
-postgres_raw_data:
-  host: krr-sql-pgnode01
-  port: 5432
-  user: "%postgre_user%"
-  password: "%postgre_password%"
-  dbname: krr-pa-raw-data
-  sslmode: disable
-
-postgres_dev:
+postgres_database:
   host: krr-sql-pgnode01
   port: 5432
   user: "%postgre_user%"

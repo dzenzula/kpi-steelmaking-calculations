@@ -21,8 +21,8 @@ var (
 	connMutex sync.Mutex // Мьютекс для обеспечения безопасности доступа к подключениям
 )
 
-func ConnectMsDev() *sql.DB {
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.GlobalConfig.ConStringMsDev.Server, c.GlobalConfig.ConStringMsDev.UserID, c.GlobalConfig.ConStringMsDev.Password, c.GlobalConfig.ConStringMsDev.Database)
+func ConnectMs() *sql.DB {
+	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.UserID, c.GlobalConfig.ConStringMsDb.Password, c.GlobalConfig.ConStringMsDb.Database)
 
 	connMutex.Lock()
 	defer connMutex.Unlock()
@@ -43,8 +43,8 @@ func ConnectMsDev() *sql.DB {
 	return msDevConn
 }
 
-func ConnectPgDev() *sql.DB {
-	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.GlobalConfig.ConStringPgDev.Host, c.GlobalConfig.ConStringPgDev.Port, c.GlobalConfig.ConStringPgDev.User, c.GlobalConfig.ConStringPgDev.Password, c.GlobalConfig.ConStringPgDev.DBName, c.GlobalConfig.ConStringPgDev.SSLMode)
+func ConnectPg() *sql.DB {
+	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.Port, c.GlobalConfig.ConStringPgDb.User, c.GlobalConfig.ConStringPgDb.Password, c.GlobalConfig.ConStringPgDb.DBName, c.GlobalConfig.ConStringPgDb.SSLMode)
 
 	connMutex.Lock()
 	defer connMutex.Unlock()

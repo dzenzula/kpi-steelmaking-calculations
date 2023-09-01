@@ -1,0 +1,91 @@
+mssql_database:
+  server: KRR-TST-PAHWL02
+  user_id: EUROPE\%mssql_user%
+  password: "%mssql_password%"
+  database: KRR-PA-DEV-Development
+
+postgres_database:
+  host: krr-sql-pgnode01
+  port: 5432
+  user: "%postgre_user%"
+  password: "%postgre_password%"
+  dbname: development
+  sslmode: disable
+
+type_ms: "mssql"
+type_pg: "postgres"
+
+
+querries:
+  consumption_mnlz: "SELECT * FROM public.cast_iron_consumption_mnlz('%s')"
+  consumption_ingot: "SELECT * FROM public.cast_iron_consumption_ingot('%s')"
+  meltdowns_onrs: "SELECT * FROM public.number_of_meltdowns_onrs('%s')"
+  scrap_consumption_mnlz: "SELECT * FROM public.scrap_consumption_mnlz('%s')"
+  scrap_consumption_ingot: "SELECT * FROM public.scrap_consumption_ingot('%s')"
+  get_data: "SELECT * FROM public.get_data('%s', %d)"
+  get_data_greater_than_zero: "SELECT * FROM public.get_data_greater_than_zero('%s', %d)"
+  get_slag_truncation: "SELECT * FROM public.get_slag_truncation('%s')"
+  get_pheroalloy_mnlz: "SELECT * FROM public.get_pheroalloy_mnlz('%s', %d)"
+  get_pheroalloy_ingot: "SELECT * FROM public.get_pheroalloy_ingot('%s', %d)"
+  get_upk: "SELECT * FROM public.get_upk('%s', %d, %d)"
+  get_good_cast_iron: "SELECT * FROM public.get_good_cast_iron('%s', %d)"
+  get_inlet_temperature_oxidation: "SELECT * FROM public.get_inlet_temperature_oxidation('%s', %d, %d)"
+
+measurings:
+  fl_heat_lf: 77851922
+  w_heat: 77851923
+  w_iron: 77851920
+  w_lom: 77851924
+  w_heat_mnlz: 77851927
+  si_iron: 77851903
+  t_iron: 77851904
+  p_iron: 53253288
+  oxi_bof: 77851909
+  w_caov: 77851910
+  w_dolo: 77851911
+  w_alrz: 77851912
+  w_smesrz: 77851913
+  s_iron: 77851906
+  w_fesi: 16772519
+  fesi65: 16758519
+  w_simn: 16778619
+  simn: 23456445
+  w_femn78: 16875211
+  w_femn88: 16875213
+  w_femn95: 16875214
+  femn78: 16875217
+  femn88: 16875218
+  fl_heat_cutoff_slag: 16875224
+  fl_slop: 16875231
+  shl_mgo: 16875248
+  w_fecr: 16875254
+  w_fecr025: 16875255
+  w_fecr800: 16875256
+  tm_treatment: 13456745
+  n_lf: 12375678
+  m1e: 13455740
+  m2e: 13455741
+  m3e: 13455742
+  m4e: 13455743
+  m5e: 13455744
+  m6e: 13455745
+  m7e: 13455746
+  m8e: 13455747
+  w_cao_lf: 29897655
+  w_cao90_lf: 29897656
+  w_caf2_lf: 29897657
+  w_apk_lf: 29897658
+  t1: 29897659
+  treatment: 29897660
+  o2_1: 29897661
+  avgspeed: 29897663
+  ncasting: 29897664
+  cnt_heat: 29897667
+  pcount: 29897668
+  weighttotal: 29897671
+  weight_grossstart: 29897672
+  weight_grossend: 29897673
+  tm_between: 13456799
+  ccm_begin: 13456787
+  dtk: 13456753
+  dtn: 13456754

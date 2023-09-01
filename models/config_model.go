@@ -94,11 +94,10 @@ type Measurings struct {
 }
 
 type Config struct {
-	ConStringMsDev     ConStringMS `yaml:"mssql_data_bof"`
-	ConStringPgRawData ConStringPG `yaml:"postgres_raw_data"`
-	ConStringPgDev     ConStringPG `yaml:"postgres_dev"`
-	Querries           Querries    `yaml:"querries"`
-	Measurings         Measurings  `yaml:"measurings"`
-	TypeMS             string      `yaml:"type_ms"`
-	TypePG             string      `yaml:"type_pg"`
+	ConStringMsDb ConStringMS `yaml:"mssql_database"`
+	ConStringPgDb ConStringPG `yaml:"postgres_database"`
+	Querries      Querries    `yaml:"querries"`
+	Measurings    Measurings  `yaml:"measurings"`
+	TypeMS        string      `yaml:"type_ms"`
+	TypePG        string      `yaml:"type_pg"`
 }
