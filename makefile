@@ -1,7 +1,7 @@
 BUILD_NAME ?= kpi-steelmaking-calculations
 DEST_DIR := deploy/
 #DEPLOY_FILES := ${BUILD_NAME} configs/${BUILD_NAME}.conf.yml service/${BUILD_NAME}.service
-DEPLOY_FILES := ${BUILD_NAME} service/${BUILD_NAME}.service configs/${BUILD_NAME}.conf.yml
+DEPLOY_FILES := ${BUILD_NAME} service/${BUILD_NAME}.service configs/config.yml
 
 build:
 	go build -ldflags "-s -w" -o ${BUILD_NAME} main.go
