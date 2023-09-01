@@ -14,7 +14,7 @@ var (
 )
 
 func initConfig() models.Config {
-	configFiles := []string{"configuration/config.yml", "configs/kpi-parameters.conf.yml", "config.yaml"}
+	configFiles := []string{"configuration/config.yml", "configs/kpi-steelmaking-calculations.conf.yml", "config.yaml"}
 	var configName string
 	var config models.Config
 

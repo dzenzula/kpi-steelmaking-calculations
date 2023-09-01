@@ -1,0 +1,14 @@
+[Unit]
+Description = kpi-steelmaking-calculations daemon
+After = network.target
+
+[Service]
+Type = simple
+WorkingDirectory = /home/services/kpi-steelmaking-calculations
+ExecStart = /home/services/kpi-steelmaking-calculations/kpi-steelmaking-calculations
+Restart = always
+RestartSec = 30
+TimeoutStopSec = 5
+
+[Install]
+WantedBy = multi-user.target

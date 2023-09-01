@@ -10,7 +10,7 @@ import (
 var logger = logrus.New()
 
 func InitLogger() {
-	file, err := os.OpenFile("kpi-paremeters.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile("kpi-steelmaking-calculations.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}

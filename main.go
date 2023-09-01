@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	calc "main/calculations"
 	"main/database"
 	"main/logger"
@@ -61,12 +60,11 @@ func main() {
 		report.InletTemperature = calc.InletTemperature(pgdb, date)
 		report.InletOxidation = calc.InletOxidation(pgdb, date)
 
-		fmt.Println(date)
 		database.InsertReport(msdb, *report)
 
 		msdb.Close()
 		pgdb.Close()
-		logger.Info("Done!")
+		logger.Info("Calculations is done!")
 	}
 }
 
@@ -74,6 +72,6 @@ func waitUntilMidnight() {
 	currentTime := time.Now()
 	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 20, 0, 0, 0, currentTime.Location())
 	timeToWait := targetTime.Sub(currentTime)
-	fmt.Println(timeToWait)
+	logger.Info("The next calculation will be in", timeToWait)
 	time.Sleep(timeToWait)
 }
