@@ -1,14 +1,14 @@
 mssql_database:
   server: KRR-TST-PAHWL02
-  user_id: EUROPE\%mssql_user%
-  password: "%mssql_password%"
+  user_id: EUROPE\%LOGIN%
+  password: "%PASSWORD%"
   database: KRR-PA-DEV-Development
 
 postgres_database:
   host: krr-sql-pgnode01
   port: 5432
-  user: "%postgre_user%"
-  password: "%postgre_password%"
+  user: "%LOGIN%"
+  password: "%PASSWORD%"
   dbname: development
   sslmode: disable
 
