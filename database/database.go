@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	c "main/configuration"
 	"main/logger"
 	"main/models"
@@ -35,11 +34,12 @@ func ConnectMs() *sql.DB {
 
 	pingErr := conn.Ping()
 	if pingErr != nil {
-		log.Fatal(pingErr.Error())
+		logger.Fatal(pingErr.Error())
 	}
 
 	msDevConn = conn
 
+	logger.Info("Connected to", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.Database)
 	return msDevConn
 }
 
@@ -62,6 +62,7 @@ func ConnectPg() *sql.DB {
 
 	pgDevConn = conn
 
+	logger.Info("Connected to", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.DBName)
 	return pgDevConn
 }
 
@@ -103,8 +104,9 @@ func InsertReport(db *sql.DB, report models.Report) error {
 	r := structable.New(runner, c.GlobalConfig.TypeMS).Bind("[dbo].[KpiReport]", report)
 	err := r.Insert()
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 	}
 
+	logger.Info("Data to report insrted!")
 	return nil
 }

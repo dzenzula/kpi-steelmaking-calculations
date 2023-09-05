@@ -34,13 +34,17 @@ func Avg(m []models.Query) float64 {
 }
 
 func Len(m []models.Query) float64 {
-	return float64(len(m))
+	if m == nil {
+		return 0
+	}
+	res := float64(len(m))
+	return res
 }
 
-func GetDate() string {
+func GetDate(i int) string {
 	currentTime := time.Now()
 	localTime := currentTime.Local()
-	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day(), 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()+i, 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
 
 	return date
 }

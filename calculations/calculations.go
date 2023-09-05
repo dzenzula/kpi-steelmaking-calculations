@@ -443,7 +443,7 @@ func SlagTruncationRatio(db *sql.DB, date string) float64 {
 
 // Признак
 func getSkimmingFlagCount(db *sql.DB, date string) float64 {
-	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.FlSlop)
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetSlagTruncation, date)
 	data := database.ExecuteQuery(db, q)
 	len := Len(data)
 	return len
@@ -792,7 +792,7 @@ func getCaOHighCalcium(db *sql.DB, date string) float64 {
 
 // Потребление Извести, кг/т
 func LimestoneConsumption(db *sql.DB, date string) float64 {
-	prodMNLZ := productionMNLZSum(db, date)
+	//prodMNLZ := productionMNLZSum(db, date)
 	CaO := getCaO(db, date)
 	CaOhigh := getCaOHighCalcium(db, date)
 
@@ -812,10 +812,12 @@ func getCaF2(db *sql.DB, date string) float64 {
 
 // Потребление шпата
 func FluorsparConsumption(db *sql.DB, date string) float64 {
-	prodMNLZ := productionMNLZSum(db, date)
+	//prodMNLZ := productionMNLZSum(db, date)
 	caF2 := getCaF2(db, date)
 
 	res := SafeDivision(caF2, prodMNLZ)
+	fmt.Println("Шпат = Шпат / Производство МНЛЗ")
+	fmt.Printf("%f = %f / %f\n", caF2, caF2, prodMNLZ)
 	return res
 }
 
@@ -829,12 +831,16 @@ func getAPK(db *sql.DB, date string) float64 {
 
 // Потребление АРК
 func ArgonOxygenConsumption(db *sql.DB, date string) float64 {
-	prodMNLZ := productionMNLZSum(db, date)
+	//prodMNLZ := productionMNLZSum(db, date)
 	apk := getAPK(db, date)
 
 	res := SafeDivision(apk, prodMNLZ)
+	fmt.Println("АРК = АРК / Производство МНЛЗ")
+	fmt.Printf("%f = %f / %f\n", apk, apk, prodMNLZ)
 	return res
 }
+
+//---------------------------------------------------
 
 // Температура по приходу
 func InletTemperature(db *sql.DB, date string) float64 {
@@ -860,3 +866,32 @@ func InletOxidation(db *sql.DB, date string) float64 {
 	}
 	return res / 3
 }
+
+// Количество шлаков
+func getSlagCount(db *sql.DB, date string) float64 {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.SampleTime)
+	data := database.ExecuteQuery(db, q)
+	len := Len(data)
+	return len
+}
+
+// Количество плавок
+func getMeltingCount(db *sql.DB, date string) float64 {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.HeatStart)
+	data := database.ExecuteQuery(db, q)
+	len := Len(data)
+	return len
+}
+
+// Анализ шлаков УПК
+func UPKSlagAnalysis(db *sql.DB, date string) float64 {
+	slagCount := getSlagCount(db, date)
+	meltCount := getMeltingCount(db, date)
+
+	res := slagCount / meltCount
+	fmt.Println("Анализ шлаков УПК = количество шлаков / количество плавок")
+	fmt.Printf("%f = %f / %f\n", res, slagCount, meltCount)
+	return res
+}
+
+// 

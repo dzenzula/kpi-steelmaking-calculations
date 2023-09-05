@@ -16,7 +16,7 @@ func main() {
 	for {
 		waitUntilMidnight()
 
-		date := calc.GetDate()
+		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPg()
 
@@ -36,7 +36,7 @@ func main() {
 		report.DolomiteFlow = calc.DolomiteFlow(pgdb, date)
 		report.AluminumPreheating = calc.AluminumPreheating(pgdb, date)
 		report.MixMelting = calc.MixMelting(pgdb, date)
-		report.SiCC = calc.SiMnConsumption(pgdb, date)
+		report.SiCC = calc.FeSiConsumption(pgdb, date)
 		report.SiModel = calc.FeSiModelConsumption(pgdb, date)
 		report.SiMnCC = calc.SiMnConsumption(pgdb, date)
 		report.SiMnModel = calc.SiMnModelConsumption(pgdb, date)
@@ -71,6 +71,11 @@ func main() {
 func waitUntilMidnight() {
 	currentTime := time.Now()
 	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 20, 0, 0, 0, currentTime.Location())
+
+	if currentTime.After(targetTime) {
+		targetTime = targetTime.Add(24 * time.Hour)
+	}
+
 	timeToWait := targetTime.Sub(currentTime)
 	logger.Info("The next calculation will be in", timeToWait)
 	time.Sleep(timeToWait)

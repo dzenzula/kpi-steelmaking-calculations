@@ -91,6 +91,8 @@ type Measurings struct {
 	CCMBegin         int `yaml:"ccm_begin"`
 	Dtk              int `yaml:"dtk"`
 	Dtn              int `yaml:"dtn"`
+	SampleTime       int `yaml:"sample_time"`
+	HeatStart        int `yaml:"heat_start"`
 }
 
 type Config struct {
