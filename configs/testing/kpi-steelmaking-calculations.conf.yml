@@ -16,11 +16,11 @@ type_ms: "mssql"
 type_pg: "postgres"
 
 querries:
-  consumption_mnlz: "SELECT * FROM public.cast_iron_consumption_mnlz('%s')"
-  consumption_ingot: "SELECT * FROM public.cast_iron_consumption_ingot('%s')"
-  meltdowns_onrs: "SELECT * FROM public.number_of_meltdowns_onrs('%s')"
-  scrap_consumption_mnlz: "SELECT * FROM public.scrap_consumption_mnlz('%s')"
-  scrap_consumption_ingot: "SELECT * FROM public.scrap_consumption_ingot('%s')"
+  consumption_mnlz: "SELECT * FROM public.get_cast_iron_consumption_mnlz('%s')"
+  consumption_ingot: "SELECT * FROM public.get_cast_iron_consumption_ingot('%s')"
+  meltdowns_onrs: "SELECT * FROM public.get_number_of_meltdowns_onrs('%s')"
+  scrap_consumption_mnlz: "SELECT * FROM public.get_scrap_consumption_mnlz('%s')"
+  scrap_consumption_ingot: "SELECT * FROM public.get_scrap_consumption_ingot('%s')"
   get_data: "SELECT * FROM public.get_data('%s', %d)"
   get_data_greater_than_zero: "SELECT * FROM public.get_data_greater_than_zero('%s', %d)"
   get_slag_truncation: "SELECT * FROM public.get_slag_truncation('%s')"
@@ -29,6 +29,7 @@ querries:
   get_upk: "SELECT * FROM public.get_upk('%s', %d, %d)"
   get_good_cast_iron: "SELECT * FROM public.get_good_cast_iron('%s', %d)"
   get_inlet_temperature_oxidation: "SELECT * FROM public.get_inlet_temperature_oxidation('%s', %d, %d)"
+  get_mnlz: "SELECT * FROM public.get_mnlz('%s', %d, %d)"
 
 measurings:
   fl_heat_lf: 77851922
@@ -90,3 +91,15 @@ measurings:
   dtn: 13456754
   sample_time: 16273828
   heat_start: 16273829
+  dt_begin: 16273830
+  dt_end: 16273831
+  s1_oil: 16273832
+  s2_oil: 16273833
+  s3_oil: 16273834
+  s4_oil: 16273835
+  s5_oil: 16273836
+  s6_oil: 16273837
+  dk_tap: 16273838
+  end_series: 16273839
+  serialization: 16273840
+  n_ccm: 16273841

@@ -841,6 +841,7 @@ func ArgonOxygenConsumption(db *sql.DB, date string) float64 {
 }
 
 //---------------------------------------------------
+//Добавить расчеты по Расходу Электричества и Электродов
 
 // Температура по приходу
 func InletTemperature(db *sql.DB, date string) float64 {
@@ -888,10 +889,144 @@ func UPKSlagAnalysis(db *sql.DB, date string) float64 {
 	slagCount := getSlagCount(db, date)
 	meltCount := getMeltingCount(db, date)
 
-	res := slagCount / meltCount
+	res := SafeDivision(slagCount, meltCount)
 	fmt.Println("Анализ шлаков УПК = количество шлаков / количество плавок")
 	fmt.Printf("%f = %f / %f\n", res, slagCount, meltCount)
 	return res
 }
 
+// МНЛЗ Открытие
+func getOpening(db *sql.DB, date string, i int) []models.Query {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.DtBegin, i)
+	data := database.ExecuteQuery(db, q)
+	return data
+}
+
+// МНЛЗ Закрытие
+func getClosing(db *sql.DB, date string, i int) []models.Query {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.DtEnd, i)
+	data := database.ExecuteQuery(db, q)
+	return data
+}
+
+// Цикл разливки
+func CastingCycle(db *sql.DB, date string) float64 {
+	var dtn, dtk []models.Query
+	for i := 1; i <= 3; i++ {
+		dtn = append(dtn, getOpening(db, date, i)...)
+		dtk = append(dtk, getClosing(db, date, i)...)
+	}
+	res := AvgDiffDate(dtn, dtk)
+	fmt.Println("Цикл разливки =  Закрытие - Открытие")
+	fmt.Printf("Цикл разливки = %f\n", res)
+	return res
+}
+
+// Ср. скорость ручья
+func getAvgSpeed(db *sql.DB, date string, i int) float64 {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.AvgSpeed, i)
+	data := database.ExecuteQuery(db, q)
+	avg := Avg(data)
+	return avg
+}
+
+// Скорость разливки
+func CastingSpeed(db *sql.DB, date string) float64 {
+	res := 0.0
+	for i := 1; i <= 3; i++ {
+		speed := getAvgSpeed(db, date, i)
+		res = res + speed
+	}
+	res = res / 3
+	return res
+}
+
+// Серийность стопорной разливки
+func CastingStopperSerial(db *sql.DB, date string) float64 {
+	//q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.AvgSpeed)
+	//data := database.ExecuteQuery(db, q)
+	return 0.0
+}
+
+// Серийность открытой разливки МНЛЗ1
+func MNLZ1OpenSerial(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Серийность открытой разливки МНЛЗ2
+func MNLZ2OpenSerial(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Серийность открытой разливки МНЛЗ3
+func MNLZ3OpenSerial(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Кол-во ручьев
+func getStreamsCount(db *sql.DB, date string, n int) float64 {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.PCount, n)
+	data := database.ExecuteQuery(db, q)
+	avg := Avg(data)
+	return avg
+}
+
+// Количество ручьев в работе МНЛЗ1
+func MNLZ1Streams(db *sql.DB, date string) float64 {
+	res := getStreamsCount(db, date, 1)
+	return res
+}
+
+// Количество ручьев в работе МНЛЗ2
+func MNLZ2Streams(db *sql.DB, date string) float64 {
+	res := getStreamsCount(db, date, 2)
+	return res
+}
+
+// Количество ручьев в работе МНЛЗ3
+func MNLZ3Streams(db *sql.DB, date string) float64 {
+	res := getStreamsCount(db, date, 3)
+	return res
+}
+
 // 
+
+// Длительность перепаковки МНЛЗ1, мин
+func MNLZ1RepackingDuration(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Длительность перепаковки МНЛЗ1, мин
+func MNLZ2RepackingDuration(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Длительность перепаковки МНЛЗ1, мин
+func MNLZ3RepackingDuration(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Плавки с отклонением по температуре МНЛЗ1, %
+func MNLZ1MeltTempDeviation(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Плавки с отклонением по температуре МНЛЗ2, %
+func MNLZ2MeltTempDeviation(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Плавки с отклонением по температуре МНЛЗ3, %
+func MNLZ3MeltTempDeviation(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+//Выход годного МНЛЗ
+func GoodMNLZOutput(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Время нахождения меиалла в ковше (до разливки), мин
+func MetalRetentionTime(db *sql.DB, date string) float64 {
+	return 0.0
+}

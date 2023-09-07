@@ -62,7 +62,7 @@ func ConnectPg() *sql.DB {
 
 	pgDevConn = conn
 
-	logger.Info("Connected to", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.DBName)
+	logger.Info(fmt.Sprintf("Connected to %s, %s\n", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.DBName))
 	return pgDevConn
 }
 
@@ -107,6 +107,6 @@ func InsertReport(db *sql.DB, report models.Report) error {
 		logger.Error(err)
 	}
 
-	logger.Info("Data to report insrted!")
+	logger.Info("Data to report inserted!")
 	return nil
 }

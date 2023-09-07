@@ -14,9 +14,9 @@ func main() {
 	logger.InitLogger()
 
 	for {
-		waitUntilMidnight()
+		//waitUntilMidnight()
 
-		date := calc.GetDate(0)
+		date := calc.GetDate(-1)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPg()
 
@@ -59,6 +59,24 @@ func main() {
 		report.ElectrodeConsumption = 0.0
 		report.InletTemperature = calc.InletTemperature(pgdb, date)
 		report.InletOxidation = calc.InletOxidation(pgdb, date)
+		report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, date)
+		report.CastingCycle = calc.CastingCycle(pgdb, date)
+		report.CastingSpeed = calc.CastingSpeed(pgdb, date)
+		report.CastingStopperSerial = calc.CastingStopperSerial(pgdb, date)
+		report.MNLZ1OpenSerial = calc.MNLZ1OpenSerial(pgdb, date)
+		report.MNLZ2OpenSerial = calc.MNLZ2OpenSerial(pgdb, date)
+		report.MNLZ3OpenSerial = calc.MNLZ3OpenSerial(pgdb, date)
+		report.MNLZ1Streams = calc.MNLZ1Streams(pgdb, date)
+		report.MNLZ2Streams = calc.MNLZ2Streams(pgdb, date)
+		report.MNLZ3Streams = calc.MNLZ3Streams(pgdb, date)
+		report.MNLZ1RepackingDuration = calc.MNLZ1RepackingDuration(pgdb, date)
+		report.MNLZ2RepackingDuration = calc.MNLZ2RepackingDuration(pgdb, date)
+		report.MNLZ3RepackingDuration = calc.MNLZ3RepackingDuration(pgdb, date)
+		report.MNLZ1MeltTempDeviation = calc.MNLZ1MeltTempDeviation(pgdb, date)
+		report.MNLZ2MeltTempDeviation = calc.MNLZ2MeltTempDeviation(pgdb, date)
+		report.MNLZ3MeltTempDeviation = calc.MNLZ3MeltTempDeviation(pgdb, date)
+		report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)
+		report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
 
 		database.InsertReport(msdb, *report)
 

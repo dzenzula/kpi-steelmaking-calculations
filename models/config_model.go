@@ -31,6 +31,7 @@ type Querries struct {
 	GetUpk                       string `yaml:"get_upk"`
 	GetGoodCastIron              string `yaml:"get_good_cast_iron"`
 	GetInletTemperatureOxidation string `yaml:"get_inlet_temperature_oxidation"`
+	GetMnlz                      string `yaml:"get_mnlz"`
 }
 
 type Measurings struct {
@@ -93,6 +94,15 @@ type Measurings struct {
 	Dtn              int `yaml:"dtn"`
 	SampleTime       int `yaml:"sample_time"`
 	HeatStart        int `yaml:"heat_start"`
+	DtBegin          int `yaml:"dt_begin"`
+	DtEnd            int `yaml:"dt_end"`
+	S1Oil            int `yaml:"s1_oil"`
+	S2Oil            int `yaml:"s2_oil"`
+	S3Oil            int `yaml:"s3_oil"`
+	S4Oil            int `yaml:"s4_oil"`
+	S5Oil            int `yaml:"s5_oil"`
+	S6Oil            int `yaml:"s6_oil"`
+	DkTap            int `yaml:"dk_tap"`
 }
 
 type Config struct {

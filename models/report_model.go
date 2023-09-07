@@ -7,7 +7,7 @@ type Report struct {
 	ScrapMelting           float64 `stbl:"ScrapMelting"`
 	SiInCastIron           float64 `stbl:"SiInCastIron"`
 	CastIronTemperature    float64 `stbl:"CastIronTemperature"`
-	GoodCastIron    	   float64 `stbl:"GoodCastIron"`
+	GoodCastIron           float64 `stbl:"GoodCastIron"`
 	SContent               float64 `stbl:"SContent"`
 	MNLZMelting            float64 `stbl:"MNLZMelting"`
 	IngotMelting           float64 `stbl:"IngotMelting"`
@@ -43,12 +43,18 @@ type Report struct {
 	CastingCycle           float64 `stbl:"CastingCycle"`
 	CastingSpeed           float64 `stbl:"CastingSpeed"`
 	CastingStopperSerial   float64 `stbl:"CastingStopperSerial"`
+	MNLZ1OpenSerial        float64 `stbl:"MNLZ1OpenSerial"`
+	MNLZ2OpenSerial        float64 `stbl:"MNLZ2OpenSerial"`
+	MNLZ3OpenSerial        float64 `stbl:"MNLZ3OpenSerial"`
 	MNLZ1Streams           float64 `stbl:"MNLZ1Streams"`
 	MNLZ2Streams           float64 `stbl:"MNLZ2Streams"`
 	MNLZ3Streams           float64 `stbl:"MNLZ3Streams"`
 	MNLZ1RepackingDuration float64 `stbl:"MNLZ1RepackingDuration"`
 	MNLZ2RepackingDuration float64 `stbl:"MNLZ2RepackingDuration"`
 	MNLZ3RepackingDuration float64 `stbl:"MNLZ3RepackingDuration"`
+	MNLZ1MeltTempDeviation float64 `stbl:"MNLZ1MeltTempDeviation"`
+	MNLZ2MeltTempDeviation float64 `stbl:"MNLZ2MeltTempDeviation"`
+	MNLZ3MeltTempDeviation float64 `stbl:"MNLZ3MeltTempDeviation"`
 	GoodMNLZOutput         float64 `stbl:"GoodMNLZOutput"`
 	MetalRetentionTime     float64 `stbl:"MetalRetentionTime"`
 }
