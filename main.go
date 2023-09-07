@@ -16,7 +16,7 @@ func main() {
 	for {
 		waitUntilMidnight()
 
-		date := calc.GetDate(-1)
+		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPg()
 
