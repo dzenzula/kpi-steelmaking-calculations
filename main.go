@@ -14,7 +14,7 @@ func main() {
 	logger.InitLogger()
 
 	for {
-		//waitUntilMidnight()
+		waitUntilMidnight()
 
 		date := calc.GetDate(-1)
 		msdb := database.ConnectMs()
