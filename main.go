@@ -18,7 +18,8 @@ func main() {
 
 		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
-		pgdb := database.ConnectPg()
+		pgdb := database.ConnectPgData()
+		pgdbReports := database.ConnectPgReports()
 
 		calc.CacheInit(pgdb, date)
 
@@ -78,10 +79,12 @@ func main() {
 		report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)
 		report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
 
-		database.InsertReport(msdb, *report)
+		database.InsertPgReport(pgdbReports, *report)
+		database.InsertMsReport(msdb, *report)
 
 		msdb.Close()
 		pgdb.Close()
+		pgdbReports.Close()
 		logger.Info("Calculations is done!")
 	}
 }
