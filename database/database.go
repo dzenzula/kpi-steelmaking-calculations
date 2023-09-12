@@ -15,8 +15,6 @@ import (
 )
 
 var (
-	msDevConn *sql.DB    // Глобальная переменная для подключения к MS SQL
-	pgDevConn *sql.DB    // Глобальная переменная для подключения к PostgreSQL
 	connMutex sync.Mutex // Мьютекс для обеспечения безопасности доступа к подключениям
 )
 
@@ -37,33 +35,39 @@ func ConnectMs() *sql.DB {
 		logger.Fatal(pingErr.Error())
 	}
 
-	msDevConn = conn
-
 	logger.Info("Connected to", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.Database)
-	return msDevConn
+	return conn
 }
 
-func ConnectPg() *sql.DB {
-	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.Port, c.GlobalConfig.ConStringPgDb.User, c.GlobalConfig.ConStringPgDb.Password, c.GlobalConfig.ConStringPgDb.DBName, c.GlobalConfig.ConStringPgDb.SSLMode)
+func ConnectToDatabase(config models.ConStringPG, dbName string) *sql.DB {
+	connString := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		config.Host, config.Port, config.User, config.Password, dbName, config.SSLMode,
+	)
 
 	connMutex.Lock()
 	defer connMutex.Unlock()
 
 	conn, conErr := sql.Open(c.GlobalConfig.TypePG, connString)
 	if conErr != nil {
-		logger.Error("Error opening database connection:", conErr.Error())
 		return nil
 	}
 
 	pingErr := conn.Ping()
 	if pingErr != nil {
-		logger.Fatal(pingErr.Error())
+		return nil
 	}
 
-	pgDevConn = conn
+	logger.Info(fmt.Sprintf("Connected to %s, %s\n", config.Host, dbName))
+	return conn
+}
 
-	logger.Info(fmt.Sprintf("Connected to %s, %s\n", c.GlobalConfig.ConStringPgDb.Host, c.GlobalConfig.ConStringPgDb.DBName))
-	return pgDevConn
+func ConnectPgData() *sql.DB {
+	return ConnectToDatabase(c.GlobalConfig.ConStringPgDb, c.GlobalConfig.ConStringPgDb.DBName)
+}
+
+func ConnectPgReports() *sql.DB {
+	return ConnectToDatabase(c.GlobalConfig.ConStringPgReports, c.GlobalConfig.ConStringPgReports.DBName)
 }
 
 func ExecuteQuery(db *sql.DB, q string) []models.Query {
@@ -77,7 +81,7 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 	for rows.Next() {
 		var valueNullable sql.NullString
 		var data models.Query
-		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &valueNullable, &data.Quality, &data.BatchId)
+		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &valueNullable, &data.Quality, &data.BatchId, &data.Timestamp_insert)
 		if err != nil {
 			fmt.Println("Failed to scan row:", err)
 			continue
@@ -95,7 +99,7 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 	return query
 }
 
-func InsertReport(db *sql.DB, report models.Report) error {
+func InsertMsReport(db *sql.DB, report models.Report) {
 	runner := squirrel.NewStmtCacheProxy(db)
 
 	// Создание объекта structable для привязки значений структуры
@@ -108,5 +112,15 @@ func InsertReport(db *sql.DB, report models.Report) error {
 	}
 
 	logger.Info("Data to report inserted!")
-	return nil
+}
+
+func InsertPgReport(db *sql.DB, report models.Report) {
+	runner := squirrel.NewStmtCacheProxy(db)
+	r := structable.New(runner, c.GlobalConfig.TypePG).Bind("reports.\"kpi-steelmaking-reports\"", &report)
+	err := r.Insert()
+	if err != nil {
+		logger.Error(err)
+	}
+
+	logger.Info("Data to report inserted in PostgreSQL!")
 }
