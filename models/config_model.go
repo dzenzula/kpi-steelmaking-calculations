@@ -103,13 +103,17 @@ type Measurings struct {
 	S5Oil            int `yaml:"s5_oil"`
 	S6Oil            int `yaml:"s6_oil"`
 	DkTap            int `yaml:"dk_tap"`
+	EndSeries        int `yaml:"end_series"`
+	Serialization    int `yaml:"serialization"`
+	Nccm             int `yaml:"n_ccm"`
 }
 
 type Config struct {
-	ConStringMsDb ConStringMS `yaml:"mssql_database"`
-	ConStringPgDb ConStringPG `yaml:"postgres_database"`
-	Querries      Querries    `yaml:"querries"`
-	Measurings    Measurings  `yaml:"measurings"`
-	TypeMS        string      `yaml:"type_ms"`
-	TypePG        string      `yaml:"type_pg"`
+	ConStringMsDb      ConStringMS `yaml:"mssql_database"`
+	ConStringPgDb      ConStringPG `yaml:"postgres_data"`
+	ConStringPgReports ConStringPG `yaml:"postgres_reports"`
+	Querries           Querries    `yaml:"querries"`
+	Measurings         Measurings  `yaml:"measurings"`
+	TypeMS             string      `yaml:"type_ms"`
+	TypePG             string      `yaml:"type_pg"`
 }

@@ -6,6 +6,7 @@ import (
 	c "main/configuration"
 	"main/database"
 	"main/models"
+	"strconv"
 
 	"gonum.org/v1/gonum/floats"
 )
@@ -840,8 +841,15 @@ func ArgonOxygenConsumption(db *sql.DB, date string) float64 {
 	return res
 }
 
-//---------------------------------------------------
-//Добавить расчеты по Расходу Электричества и Электродов
+// Расходу Электричества
+func ElectricityConsumption(db *sql.DB, date string) float64 {
+	return 0.0
+}
+
+// Расход Электродов
+func ElectrodeConsumption(db *sql.DB, date string) float64 {
+	return 0.0
+}
 
 // Температура по приходу
 func InletTemperature(db *sql.DB, date string) float64 {
@@ -941,10 +949,64 @@ func CastingSpeed(db *sql.DB, date string) float64 {
 	return res
 }
 
+// Расход смазки
+func getGreaseConsumption(db *sql.DB, date string, id int, i int) []models.Query {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, id, i)
+	data := database.ExecuteQuery(db, q)
+	return data
+}
+
+// Конец серии
+func getEndSeries(db *sql.DB, date string, i int) []models.Query {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.EndSeries, i)
+	data := database.ExecuteQuery(db, q)
+	return data
+}
+
 // Серийность стопорной разливки
 func CastingStopperSerial(db *sql.DB, date string) float64 {
-	//q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.AvgSpeed)
-	//data := database.ExecuteQuery(db, q)
+	tmp := []int{
+		c.GlobalConfig.Measurings.S1Oil,
+		c.GlobalConfig.Measurings.S2Oil,
+		c.GlobalConfig.Measurings.S3Oil,
+		c.GlobalConfig.Measurings.S4Oil,
+		c.GlobalConfig.Measurings.S5Oil,
+		c.GlobalConfig.Measurings.S6Oil,
+	}
+
+	for n := 1; n <= 3; n++ {
+		averages := make([]float64, len(tmp))
+		valueArrays := make([][]float64, len(tmp))
+
+		for i, id := range tmp {
+			data := getGreaseConsumption(db, date, id, n)
+
+			values := make([]float64, len(data))
+
+			for j, query := range data {
+				if query.Value != nil {
+					value, err := strconv.ParseFloat(*query.Value, 64)
+					if err == nil {
+						values[j] = value
+					}
+				}
+			}
+
+			valueArrays[i] = values
+		}
+
+		for i, values := range valueArrays {
+			if len(values) > 0 {
+				sum := 0.0
+				for _, value := range values {
+					sum += value
+				}
+				average := sum / float64(len(values))
+				averages[i] = average
+			}
+		}
+	}
+
 	return 0.0
 }
 
@@ -989,7 +1051,7 @@ func MNLZ3Streams(db *sql.DB, date string) float64 {
 	return res
 }
 
-// 
+//
 
 // Длительность перепаковки МНЛЗ1, мин
 func MNLZ1RepackingDuration(db *sql.DB, date string) float64 {
@@ -1021,7 +1083,7 @@ func MNLZ3MeltTempDeviation(db *sql.DB, date string) float64 {
 	return 0.0
 }
 
-//Выход годного МНЛЗ
+// Выход годного МНЛЗ
 func GoodMNLZOutput(db *sql.DB, date string) float64 {
 	return 0.0
 }

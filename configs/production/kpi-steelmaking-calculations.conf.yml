@@ -4,12 +4,20 @@ mssql_database:
   password: "%PASSWORD%"
   database: KRR-PA-DEV-Development
 
-postgres_database:
-  host: krr-sql-pgnode01
+postgres_reports:
+  host: KRR-SQL-PSGRE00
   port: 5432
   user: "%LOGIN%"
   password: "%PASSWORD%"
-  dbname: development
+  dbname: krr-pa-analytics-data
+  sslmode: disable  
+
+postgres_data:
+  host: KRR-SQL-PSGRE00
+  port: 5432
+  user: "%LOGIN%"
+  password: "%PASSWORD%"
+  dbname: krr-pa-raw-data
   sslmode: disable
 
 type_ms: "mssql"

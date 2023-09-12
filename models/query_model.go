@@ -1,9 +1,10 @@
 package models
 
 type Query struct {
-	IdMeasuring int
-	TimeStamp   string
-	Value       *string
-	Quality     int
-	BatchId     string
+	IdMeasuring      int
+	TimeStamp        string
+	Value            *string
+	Quality          int
+	BatchId          string
+	Timestamp_insert string
 }
