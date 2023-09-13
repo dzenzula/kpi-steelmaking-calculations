@@ -6,6 +6,7 @@ import (
 	c "main/configuration"
 	"main/database"
 	"main/models"
+	"math"
 	"strconv"
 
 	"gonum.org/v1/gonum/floats"
@@ -1051,21 +1052,31 @@ func MNLZ3Streams(db *sql.DB, date string) float64 {
 	return res
 }
 
-//
+// Перепаковка
+func getRepackingMin(db *sql.DB, date string, n int) int {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.TmBetween, n)
+	data := database.ExecuteQuery(db, q)
+	seconds := Avg(data)
+	minutes := int(math.Floor(seconds / 60))
+	return minutes
+}
 
 // Длительность перепаковки МНЛЗ1, мин
 func MNLZ1RepackingDuration(db *sql.DB, date string) float64 {
-	return 0.0
+	res := getRepackingMin(db, date, 1)
+	return float64(res)
 }
 
 // Длительность перепаковки МНЛЗ1, мин
 func MNLZ2RepackingDuration(db *sql.DB, date string) float64 {
-	return 0.0
+	res := getRepackingMin(db, date, 2)
+	return float64(res)
 }
 
 // Длительность перепаковки МНЛЗ1, мин
 func MNLZ3RepackingDuration(db *sql.DB, date string) float64 {
-	return 0.0
+	res := getRepackingMin(db, date, 3)
+	return float64(res)
 }
 
 // Плавки с отклонением по температуре МНЛЗ1, %

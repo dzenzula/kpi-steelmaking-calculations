@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	calc "main/calculations"
 	"main/database"
 	"main/logger"
@@ -15,6 +16,7 @@ func main() {
 
 	for {
 		waitUntilMidnight()
+		startTime := time.Now()
 
 		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
@@ -56,8 +58,8 @@ func main() {
 		report.LimestoneConsumption = calc.LimestoneConsumption(pgdb, date)
 		report.FluorsparConsumption = calc.FluorsparConsumption(pgdb, date)
 		report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdb, date)
-		report.ElectricityConsumption = 0.0
-		report.ElectrodeConsumption = 0.0
+		report.ElectricityConsumption = calc.ElectricityConsumption(pgdb, date)
+		report.ElectrodeConsumption = calc.ElectrodeConsumption(pgdb, date)
 		report.InletTemperature = calc.InletTemperature(pgdb, date)
 		report.InletOxidation = calc.InletOxidation(pgdb, date)
 		report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, date)
@@ -86,6 +88,10 @@ func main() {
 		pgdb.Close()
 		pgdbReports.Close()
 		logger.Info("Calculations is done!")
+
+		elapsedTime := time.Since(startTime)
+		logger.Info("Run time: ", elapsedTime)
+		fmt.Printf("Run time: %s\n", elapsedTime)
 	}
 }
 
