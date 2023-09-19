@@ -1,6 +1,7 @@
 package calculations
 
 import (
+	c "main/configuration"
 	"main/models"
 	"strconv"
 	"time"
@@ -81,4 +82,58 @@ func AvgDiffDate(dtn []models.Query, dtk []models.Query) float64 {
 	averageDifference := totalDifferences / float64(len(differences))
 
 	return averageDifference
+}
+
+func CalculateAverages(data [][]*float64) []*float64 {
+	if len(data) == 0 || len(data[0]) == 0 {
+		return nil
+	}
+
+	n := len(data[0])
+	averages := make([]*float64, n)
+	counts := make([]int, n)
+
+	for _, row := range data {
+		for i, val := range row {
+			if val != nil {
+				if averages[i] == nil {
+					averages[i] = new(float64)
+				}
+				*averages[i] += float64(*val)
+				counts[i]++
+			}
+		}
+	}
+
+	for i := 0; i < n; i++ {
+		if averages[i] != nil {
+			*averages[i] /= float64(counts[i])
+		}
+	}
+
+	return averages
+}
+
+func ParseFloatValues(queries []models.Query) []*float64 {
+	values := make([]*float64, len(queries))
+	for i, query := range queries {
+		if query.Value != nil {
+			value, err := strconv.ParseFloat(*query.Value, 64)
+			if err == nil {
+				values[i] = &value
+			} else {
+				values[i] = nil
+			}
+		}
+	}
+	return values
+}
+
+func FindSteelGrade(steelType string) (int, int) {
+	for _, mark := range c.GlobalConfig.SteelMarks {
+		if mark.SteelType == steelType {
+			return mark.Min, mark.Max
+		}
+	}
+	return 0, 0
 }
