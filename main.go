@@ -16,10 +16,10 @@ var report = new(models.Report)
 
 func main() {
 	for {
-		waitUntilMidnight()
 		logger.InitLogger()
 		logger.Info("Service started work")
-
+		waitUntilMidnight()
+		
 		startTime := time.Now()
 		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
