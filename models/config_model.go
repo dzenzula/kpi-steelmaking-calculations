@@ -85,7 +85,7 @@ type Measurings struct {
 	NCasting         int `yaml:"ncasting"`
 	CntHeat          int `yaml:"cnt_heat"`
 	PCount           int `yaml:"pcount"`
-	WeightTotal      int `yaml:"weighttotal"`
+	WeightLs         int `yaml:"weight_ls"`
 	WeightGrossStart int `yaml:"weight_grossstart"`
 	WeightGrossEnd   int `yaml:"weight_grossend"`
 	TmBetween        int `yaml:"tm_between"`
@@ -106,6 +106,29 @@ type Measurings struct {
 	EndSeries        int `yaml:"end_series"`
 	Serialization    int `yaml:"serialization"`
 	Nccm             int `yaml:"n_ccm"`
+	Energy1          int `yaml:"energy1"`
+	Energy2          int `yaml:"energy2"`
+	Energy3          int `yaml:"energy3"`
+	Energy4          int `yaml:"energy4"`
+	Energy5          int `yaml:"energy5"`
+	Energy6          int `yaml:"energy6"`
+	Energy7          int `yaml:"energy7"`
+	Energy8          int `yaml:"energy8"`
+	Temperature1     int `yaml:"temperature1"`
+	Temperature2     int `yaml:"temperature2"`
+	Temperature3     int `yaml:"temperature3"`
+	Temperature4     int `yaml:"temperature4"`
+	Temperature5     int `yaml:"temperature5"`
+	Temperature6     int `yaml:"temperature6"`
+	Temperature7     int `yaml:"temperature7"`
+	Temperature8     int `yaml:"temperature8"`
+	SteelGrade       int `yaml:"steel_grade"`
+}
+
+type SteelMark struct {
+	SteelType string `yaml:"steel_type"`
+	Min       int    `yaml:"min"`
+	Max       int    `yaml:"max"`
 }
 
 type Config struct {
@@ -116,4 +139,5 @@ type Config struct {
 	Measurings         Measurings  `yaml:"measurings"`
 	TypeMS             string      `yaml:"type_ms"`
 	TypePG             string      `yaml:"type_pg"`
+	SteelMarks         []SteelMark `yaml:"steel_temperatures"`
 }
