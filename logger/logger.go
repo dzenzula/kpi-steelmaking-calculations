@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"log"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -10,9 +11,19 @@ import (
 var logger = logrus.New()
 
 func InitLogger() {
-	file, err := os.OpenFile("kpi-steelmaking-calculations.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	currentDate := time.Now()
+	date := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, currentDate.Location()).Format("2006-01-02")
+
+	if _, err := os.Stat("logs"); os.IsNotExist(err) {
+		err := os.Mkdir("logs", 0777)
+		if err != nil {
+			logger.Fatal(err)
+		}
+	}
+
+	file, err := os.OpenFile(fmt.Sprintf("logs/%s_kpi-steelmaking-calculations.log", date), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	logger.SetOutput(file)
