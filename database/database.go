@@ -6,7 +6,7 @@ import (
 	c "main/configuration"
 	"main/logger"
 	"main/models"
-	"sync"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/Masterminds/structable"
@@ -14,29 +14,29 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var (
-	connMutex sync.Mutex // Мьютекс для обеспечения безопасности доступа к подключениям
-)
-
 func ConnectMs() *sql.DB {
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.UserID, c.GlobalConfig.ConStringMsDb.Password, c.GlobalConfig.ConStringMsDb.Database)
 
-	connMutex.Lock()
-	defer connMutex.Unlock()
+	for {
+		conn, conErr := sql.Open(c.GlobalConfig.TypeMS, connString)
+		if conErr != nil {
+			logger.Error("Error opening database connection:", conErr.Error())
+			logger.Error("Next try to connect wil be in 5min")
+			time.Sleep(5 * time.Minute)
+			continue
+		}
 
-	conn, conErr := sql.Open(c.GlobalConfig.TypeMS, connString)
-	if conErr != nil {
-		logger.Error("Error opening database connection:", conErr.Error())
-		return nil
+		pingErr := conn.Ping()
+		if pingErr != nil {
+			logger.Error("Error pinging database:", pingErr.Error())
+			logger.Error("Next try to connect wil be in 5min")
+			time.Sleep(5 * time.Minute)
+			continue
+		}
+
+		logger.Info("Connected to ", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.Database)
+		return conn
 	}
-
-	pingErr := conn.Ping()
-	if pingErr != nil {
-		logger.Fatal(pingErr.Error())
-	}
-
-	logger.Info("Connected to", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.Database)
-	return conn
 }
 
 func ConnectToDatabase(config models.ConStringPG, dbName string) *sql.DB {
@@ -45,21 +45,26 @@ func ConnectToDatabase(config models.ConStringPG, dbName string) *sql.DB {
 		config.Host, config.Port, config.User, config.Password, dbName, config.SSLMode,
 	)
 
-	connMutex.Lock()
-	defer connMutex.Unlock()
+	for {
+		conn, conErr := sql.Open(c.GlobalConfig.TypePG, connString)
+		if conErr != nil {
+			logger.Error("Error opening database connection:", conErr.Error())
+			logger.Error("Next try to connect wil be in 5min")
+			time.Sleep(5 * time.Minute)
+			continue
+		}
 
-	conn, conErr := sql.Open(c.GlobalConfig.TypePG, connString)
-	if conErr != nil {
-		return nil
+		pingErr := conn.Ping()
+		if pingErr != nil {
+			logger.Error("Error pinging database:", pingErr.Error())
+			logger.Error("Next try to connect wil be in 5min")
+			time.Sleep(5 * time.Minute)
+			continue
+		}
+
+		logger.Info(fmt.Sprintf("Connected to %s, %s", config.Host, dbName))
+		return conn
 	}
-
-	pingErr := conn.Ping()
-	if pingErr != nil {
-		return nil
-	}
-
-	logger.Info(fmt.Sprintf("Connected to %s, %s\n", config.Host, dbName))
-	return conn
 }
 
 func ConnectPgData() *sql.DB {
@@ -83,7 +88,7 @@ func ExecuteQuery(db *sql.DB, q string) []models.Query {
 		var data models.Query
 		err := rows.Scan(&data.IdMeasuring, &data.TimeStamp, &valueNullable, &data.Quality, &data.BatchId, &data.Timestamp_insert)
 		if err != nil {
-			fmt.Println("Failed to scan row:", err)
+			logger.Error("Failed to scan row:", err)
 			continue
 		}
 
@@ -111,7 +116,7 @@ func InsertMsReport(db *sql.DB, report models.Report) {
 		logger.Error(err)
 	}
 
-	logger.Info("Data to report inserted!")
+	logger.Info("Data inserted in report MsSQL!")
 }
 
 func InsertPgReport(db *sql.DB, report models.Report) {
@@ -122,5 +127,5 @@ func InsertPgReport(db *sql.DB, report models.Report) {
 		logger.Error(err)
 	}
 
-	logger.Info("Data to report inserted in PostgreSQL!")
+	logger.Info("Data inserted in report PostgreSQL!")
 }
