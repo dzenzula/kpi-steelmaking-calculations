@@ -90,7 +90,7 @@ measurings:
   ncasting: 29897664
   cnt_heat: 29897667
   pcount: 29897668
-  weighttotal: 29897671
+  weight_ls: 29897671
   weight_grossstart: 29897672
   weight_grossend: 29897673
   tm_between: 13456799
@@ -111,3 +111,168 @@ measurings:
   end_series: 16273839
   serialization: 16273840
   n_ccm: 16273841
+  energy1: 15890001
+  energy2: 15890002
+  energy3: 15890003
+  energy4: 15890004
+  energy5: 15890005
+  energy6: 15890006
+  energy7: 15890007
+  energy8: 15890008
+  temperature1: 16273842
+  temperature2: 16273843
+  temperature3: 16273844
+  temperature4: 16273845
+  temperature5: 16273846
+  temperature6: 16273847
+  steel_grade: 16273848
+
+steel_temperatures:
+  - steel_type: "1006"
+    min: 1555
+    max: 1570
+  - steel_type: "1008"
+    min: 1555
+    max: 1570
+  - steel_type: "4Si1"
+    min: 1540
+    max: 1550
+  - steel_type: "C72D2"
+    min: 1495
+    max: 1510
+  - steel_type: "70"
+    min: 1495
+    max: 1510
+  - steel_type: "C80D2"
+    min: 1480
+    max: 1490
+  - steel_type: "3Si1"
+    min: 1540
+    max: 1550
+  - steel_type: "65"
+    min: 1500
+    max: 1515
+  - steel_type: "75"
+    min: 1490
+    max: 1505
+  - steel_type: "SV-08GA"
+    min: 1555
+    max: 1570
+  - steel_type: "1005"
+  - steel_type: "1006m"
+    min: 1550
+    max: 1565
+  - steel_type: "1008m"
+    min: 1550
+    max: 1565
+  - steel_type: "1010"
+    min: 1550
+    max: 1565
+  - steel_type: "1060"
+    min: 1500
+    max: 1515
+  - steel_type: "1070"
+    min: 1495
+    max: 1510
+  - steel_type: "1075"
+    min: 1485
+    max: 1500
+  - steel_type: "18G2SHF"
+    min: 1525
+    max: 1540
+  - steel_type: "20GST"
+    min: 1530
+    max: 1545
+  - steel_type: "20KP"
+    min: 1540
+    max: 1555
+  - steel_type: "23GS"
+    min: 1530
+    max: 1545
+  - steel_type: "25G2S"
+    min: 1535
+    max: 1550
+  - steel_type: "3G1SP"
+    min: 1535
+    max: 1550
+  - steel_type: "3GSP"
+    min: 1535
+    max: 1550
+  - steel_type: "5G1SP"
+    min: 1530
+    max: 1545
+  - steel_type: "5G2SP"
+    min: 1525
+    max: 1540
+  - steel_type: "5GSP"
+    min: 1530
+    max: 1545
+  - steel_type: "G4Si1"
+    min: 1540
+    max: 1550
+  - steel_type: "ST3PS"
+    min: 1535
+    max: 1550
+  - steel_type: "ST3SP"
+    min: 1538
+    max: 1553
+  - steel_type: "ST5SP"
+    min: 1525
+    max: 1545
+  - steel_type: "ST6SP"
+    min: 1515
+    max: 1530
+  - steel_type: "SV-08G2S"
+    min: 1540
+    max: 1550
+  - steel_type: "3GPS"
+    min: 1535
+    max: 1550
+  - steel_type: "35ГCM"
+    min: 1530
+    max: 1545
+  - steel_type: "CТ3CSP"
+    min: 1538
+    max: 1553
+  - steel_type: "CТ3CSP-1"
+    min: 1538
+    max: 1553
+  - steel_type: "CТ3Г1CSP"
+    min: 1535
+    max: 1550
+  - steel_type: "CТ3ГCSP"
+    min: 1535
+    max: 1550
+  - steel_type: "CТ4CSP"
+    min: 1530
+    max: 1545
+  - steel_type: "CТ5CSP"
+    min: 1525
+    max: 1545
+  - steel_type: "CТ5Г1CSP"
+    min: 1530
+    max: 1545
+  - steel_type: "CТ5ГCSP"
+    min: 1530
+    max: 1545
+  - steel_type: "SAE 1008"
+    min: 1555
+    max: 1570
+  - steel_type: "SAE 1022"
+    min: 1540
+    max: 1555
+  - steel_type: "SAE 1030"
+    min: 1520
+    max: 1535
+  - steel_type: "SAE 1040"
+    min: 1515
+    max: 1530
+  - steel_type: "SAE 1045"
+    min: 1510
+    max: 1525
+  - steel_type: "SAE 1006"
+    min: 1555
+    max: 1570
+  - steel_type: "CТ3ПC"
+    min: 1538
+    max: 1553
