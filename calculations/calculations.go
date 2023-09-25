@@ -903,7 +903,6 @@ func getElectricity(db *sql.DB, date string, id int, n int) float64 {
 	data := database.ExecuteQuery(db, q)
 	sum := Sum(data)
 
-	logger.Debug("Электричество = ", sum)
 	return sum
 }
 
@@ -913,7 +912,7 @@ func getHeatStartCount(db *sql.DB, date string, n int) float64 {
 	data := database.ExecuteQuery(db, q)
 	len := Len(data)
 
-	logger.Debug("Кол-во открытий = ", len)
+	logger.Debug(fmt.Sprintf("Кол-во открытий УПК%d = %f", n, len))
 	return len
 }
 
@@ -936,6 +935,7 @@ func ElectricityConsumption(db *sql.DB, date string) float64 {
 		for _, id := range idEnergyList {
 			sumEnergy += getElectricity(db, date, id, n)
 		}
+		logger.Debug(fmt.Sprintf("Электричество УПК%d = %f", n, sumEnergy))
 		meltingCount += getHeatStartCount(db, date, n)
 	}
 
@@ -1023,7 +1023,12 @@ func getOpening(db *sql.DB, date string, i int) []models.Query {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.DtBegin, i)
 	data := database.ExecuteQuery(db, q)
 
-	logger.Debug("МНЛЗ Открытие = ", data[0].Value)
+	if Len(data) > 0 {
+		logger.Debug("МНЛЗ Открытие = ", data[0].Value)
+	} else {
+		logger.Debug("МНЛЗ Открытие = 0")
+	}
+
 	return data
 }
 
@@ -1032,7 +1037,11 @@ func getClosing(db *sql.DB, date string, i int) []models.Query {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.DtEnd, i)
 	data := database.ExecuteQuery(db, q)
 
-	logger.Debug("МНЛЗ Закрытие = ", data[int(Len(data)-1)].Value)
+	if Len(data) > 0 {
+		logger.Debug("МНЛЗ Закрытие = ", data[int(Len(data)-1)].Value)
+	} else {
+		logger.Debug("МНЛЗ Закрытие = 0")
+	}
 	return data
 }
 
@@ -1335,7 +1344,11 @@ func getStartTimeOfMNLZPouring(db *sql.DB, date string) []models.Query {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.CCMBegin)
 	data := database.ExecuteQuery(db, q)
 
-	logger.Debug("Начало разливки МНЛЗ = ", data[0].Value)
+	if Len(data) > 0 {
+		logger.Debug("Начало разливки МНЛЗ = ", data[0].Value)
+	} else {
+		logger.Debug("Начало разливки МНЛЗ = 0")
+	}
 	return data
 }
 
@@ -1344,7 +1357,11 @@ func getEndTimeOfProduction(db *sql.DB, date string) []models.Query {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetData, date, c.GlobalConfig.Measurings.DkTap)
 	data := database.ExecuteQuery(db, q)
 
-	logger.Debug("Время окончания выпуска = ", data[0].Value)
+	if Len(data) > 0 {
+		logger.Debug("Время окончания выпуска = ", data[0].Value)
+	} else {
+		logger.Debug("Время окончания выпуска = 0")
+	}
 	return data
 }
 

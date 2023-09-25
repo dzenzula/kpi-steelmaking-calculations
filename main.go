@@ -22,7 +22,7 @@ func main() {
 		waitUntilMidnight()
 
 		startTime := time.Now()
-		date := calc.GetDate(0)
+		date := calc.GetDate(-1)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPgData()
 		pgdbReports := database.ConnectPgReports()
@@ -31,7 +31,8 @@ func main() {
 
 		report.Date = date
 
-		calculations(pgdb, date)
+		//calculations(pgdb, date)
+		calculationsWorkers(pgdb, date)
 
 		database.InsertPgReport(pgdbReports, *report)
 		database.InsertMsReport(msdb, *report)
@@ -283,5 +284,196 @@ func calculations(pgdb *sql.DB, date string) {
 		report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
 	}()
 
+	wg.Wait()
+}
+
+func calculationsWorkers(pgdb *sql.DB, date string) {
+	numWorkers := 2
+	structType := reflect.TypeOf(*report)
+	numFields := structType.NumField() - 1
+	taskChan := make(chan func(*models.Report), numFields)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for task := range taskChan {
+				task(report) // Выполняем задачу
+			}
+		}()
+	}
+
+	tasks := []func(*models.Report){
+		func(*models.Report) {
+			report.CastIronMelting = calc.ConsumptionOfCastIronForMelting(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ScrapMelting = calc.ConsumptionOfScrapForMelting(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SiInCastIron = calc.GetSiInCastIron(pgdb, date)
+		},
+		func(*models.Report) {
+			report.CastIronTemperature = calc.GetCastIronTemperature(pgdb, date)
+		},
+		func(*models.Report) {
+			report.GoodCastIron = calc.GetGoodCastIron(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SContent = calc.GetSContent(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MNLZMelting = calc.MNLZMeltingAvgWeight(pgdb, date)
+		},
+		func(*models.Report) {
+			report.IngotMelting = calc.IngotMeltingAvgWeight(pgdb, date)
+		},
+		func(*models.Report) {
+			report.O2Content = calc.O2Content(pgdb, date)
+		},
+		func(*models.Report) {
+			report.LimestoneFlow = calc.LimeFlow(pgdb, date)
+		},
+		func(*models.Report) {
+			report.DolomiteFlow = calc.DolomiteFlow(pgdb, date)
+		},
+		func(*models.Report) {
+			report.AluminumPreheating = calc.AluminumPreheating(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MixMelting = calc.MixMelting(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SiCC = calc.FeSiConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SiModel = calc.FeSiModelConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SiMnCC = calc.SiMnConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SiMnModel = calc.SiMnModelConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MnCC = calc.FeMnConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MnModel = calc.FeMnModelConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SlagTruncationRatio = calc.SlagTruncationRatio(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SlagSkimmingRatio = calc.SlagSkimmingRatio(pgdb, date)
+		},
+		func(*models.Report) {
+			report.CCMeltingCycle = calc.CCMeltingCycleMinutes(pgdb, date)
+		},
+		func(*models.Report) {
+			report.FePercentageInSlag = calc.FePercentageInSlag(pgdb, date)
+		},
+		func(*models.Report) {
+			report.SlagSamplingPercentage = calc.SlagSamplingPercentage(pgdb, date)
+		},
+		func(*models.Report) {
+			report.GoodCCOutput = calc.GoodCCOutput(pgdb, date)
+		},
+		func(*models.Report) {
+			report.GoodCCMNLZOutput = calc.GoodCCMNLZOutput(pgdb, date)
+		},
+		func(*models.Report) {
+			report.GoodIngotOutput = calc.GoodCCIngotOutput(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ProcessingTime = calc.ProcessingTime(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ArcTime = calc.ArcTime(pgdb, date)
+		},
+		func(*models.Report) {
+			report.LimestoneConsumption = calc.LimestoneConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.FluorsparConsumption = calc.FluorsparConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ElectricityConsumption = calc.ElectricityConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.ElectrodeConsumption = calc.ElectrodeConsumption(pgdb, date)
+		},
+		func(*models.Report) {
+			report.InletTemperature = calc.InletTemperature(pgdb, date)
+		},
+		func(*models.Report) {
+			report.InletOxidation = calc.InletOxidation(pgdb, date)
+		},
+		func(*models.Report) {
+			report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, date)
+		},
+		func(*models.Report) {
+			report.CastingCycle = calc.CastingCycle(pgdb, date)
+		},
+		func(*models.Report) {
+			report.CastingSpeed = calc.CastingSpeed(pgdb, date)
+		},
+		func(*models.Report) {
+			report.CastingStopperSerial = calc.CastingStopperSerial(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MNLZ1OpenSerial = calc.MNLZOpenSerial(pgdb, date, 1)
+		},
+		func(*models.Report) {
+			report.MNLZ2OpenSerial = calc.MNLZOpenSerial(pgdb, date, 2)
+		},
+		func(*models.Report) {
+			report.MNLZ3OpenSerial = calc.MNLZOpenSerial(pgdb, date, 3)
+		},
+		func(*models.Report) {
+			report.MNLZ1Streams = calc.MNLZStreams(pgdb, date, 1)
+		},
+		func(*models.Report) {
+			report.MNLZ2Streams = calc.MNLZStreams(pgdb, date, 2)
+		},
+		func(*models.Report) {
+			report.MNLZ3Streams = calc.MNLZStreams(pgdb, date, 3)
+		},
+		func(*models.Report) {
+			report.MNLZ1RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 1)
+		},
+		func(*models.Report) {
+			report.MNLZ2RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 2)
+		},
+		func(*models.Report) {
+			report.MNLZ3RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 3)
+		},
+		func(*models.Report) {
+			report.MNLZ1MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 1)
+		},
+		func(*models.Report) {
+			report.MNLZ2MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 2)
+		},
+		func(*models.Report) {
+			report.MNLZ3MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 3)
+		},
+		func(*models.Report) {
+			report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)
+		},
+		func(*models.Report) {
+			report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
+		},
+	}
+
+	for _, task := range tasks {
+		taskChan <- task
+	}
+
+	close(taskChan)
 	wg.Wait()
 }
