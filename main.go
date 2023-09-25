@@ -22,7 +22,7 @@ func main() {
 		waitUntilMidnight()
 
 		startTime := time.Now()
-		date := calc.GetDate(-1)
+		date := calc.GetDate(0)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPgData()
 		pgdbReports := database.ConnectPgReports()
