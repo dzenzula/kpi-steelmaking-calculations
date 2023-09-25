@@ -18,8 +18,9 @@ func main() {
 	for {
 		logger.InitLogger()
 		logger.Info("Service started work")
+		logger.Debug("Service is in Debug mode")
 		waitUntilMidnight()
-		
+
 		startTime := time.Now()
 		date := calc.GetDate(0)
 		msdb := database.ConnectMs()

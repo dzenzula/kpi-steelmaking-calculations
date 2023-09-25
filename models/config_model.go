@@ -137,6 +137,7 @@ type Config struct {
 	ConStringPgReports ConStringPG `yaml:"postgres_reports"`
 	Querries           Querries    `yaml:"querries"`
 	Measurings         Measurings  `yaml:"measurings"`
+	LoggerLevel        string      `yaml:"logger"`
 	TypeMS             string      `yaml:"type_ms"`
 	TypePG             string      `yaml:"type_pg"`
 	SteelMarks         []SteelMark `yaml:"steel_temperatures"`

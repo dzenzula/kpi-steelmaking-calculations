@@ -20,6 +20,7 @@ postgres_data:
   dbname: krr-pa-raw-data
   sslmode: disable
 
+logger: "debug" ##"info"
 type_ms: "mssql"
 type_pg: "postgres"
 

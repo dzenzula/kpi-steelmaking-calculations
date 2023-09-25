@@ -2,7 +2,6 @@ package configurations
 
 import (
 	"log"
-	"main/logger"
 	"main/models"
 	"os"
 
@@ -27,7 +26,7 @@ func initConfig() models.Config {
 
 	data, err := os.ReadFile(configName)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	err = yaml.Unmarshal(data, &config)

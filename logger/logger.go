@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	c "main/configuration"
 	"os"
 	"time"
 
@@ -13,6 +14,16 @@ var logger = logrus.New()
 func InitLogger() {
 	currentDate := time.Now()
 	date := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, currentDate.Location()).Format("2006-01-02")
+
+	currentLevel := logrus.InfoLevel
+
+	switch c.GlobalConfig.LoggerLevel {
+	case "debug":
+		currentLevel = logrus.DebugLevel
+	case "info":
+		currentLevel = logrus.InfoLevel
+	}
+	logger.SetLevel(currentLevel)
 
 	if _, err := os.Stat("logs"); os.IsNotExist(err) {
 		err := os.Mkdir("logs", 0777)
@@ -39,4 +50,8 @@ func Error(args ...interface{}) {
 
 func Fatal(args ...interface{}) {
 	logger.Fatal(args...)
+}
+
+func Debug(args ...interface{}) {
+	logger.Debug(args...)
 }

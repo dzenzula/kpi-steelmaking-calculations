@@ -14,6 +14,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var retry string = "Next try to connect wil be in 5min"
+
 func ConnectMs() *sql.DB {
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.GlobalConfig.ConStringMsDb.Server, c.GlobalConfig.ConStringMsDb.UserID, c.GlobalConfig.ConStringMsDb.Password, c.GlobalConfig.ConStringMsDb.Database)
 
@@ -21,7 +23,7 @@ func ConnectMs() *sql.DB {
 		conn, conErr := sql.Open(c.GlobalConfig.TypeMS, connString)
 		if conErr != nil {
 			logger.Error("Error opening database connection:", conErr.Error())
-			logger.Error("Next try to connect wil be in 5min")
+			logger.Error(retry)
 			time.Sleep(5 * time.Minute)
 			continue
 		}
@@ -29,7 +31,7 @@ func ConnectMs() *sql.DB {
 		pingErr := conn.Ping()
 		if pingErr != nil {
 			logger.Error("Error pinging database:", pingErr.Error())
-			logger.Error("Next try to connect wil be in 5min")
+			logger.Error(retry)
 			time.Sleep(5 * time.Minute)
 			continue
 		}
@@ -49,7 +51,7 @@ func ConnectToDatabase(config models.ConStringPG, dbName string) *sql.DB {
 		conn, conErr := sql.Open(c.GlobalConfig.TypePG, connString)
 		if conErr != nil {
 			logger.Error("Error opening database connection:", conErr.Error())
-			logger.Error("Next try to connect wil be in 5min")
+			logger.Error(retry)
 			time.Sleep(5 * time.Minute)
 			continue
 		}
@@ -57,7 +59,7 @@ func ConnectToDatabase(config models.ConStringPG, dbName string) *sql.DB {
 		pingErr := conn.Ping()
 		if pingErr != nil {
 			logger.Error("Error pinging database:", pingErr.Error())
-			logger.Error("Next try to connect wil be in 5min")
+			logger.Error(retry)
 			time.Sleep(5 * time.Minute)
 			continue
 		}
