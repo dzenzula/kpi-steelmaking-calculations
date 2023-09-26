@@ -30,16 +30,42 @@ var (
 
 func CacheInit(db *sql.DB, date string) {
 	logger.Info("Calculation cache initialization started")
-	mnlzConsumption = castIronConsumptionMnlzSum(db, date)
-	bcConsumption = castIronConsumptionIngotSum(db, date)
-	sMeltCount = numberMeltdownsOnrs(db, date)
-	cPourCount = numberMeltdownsCasting(db, date)
-	mnlzScrapConsumption = scrapConsumptionMnlzSum(db, date)
-	bcScrapConsumption = scrapConsumptionIngotSum(db, date)
-	prodMNLZ = productionMNLZSum(db, date)
-	prodIngot = productionIngotSum(db, date)
-	ferroalloysMNLZ = ferroalloysOnMNLZ(db, date)
-	ferroalloysIngot = ferroalloysOnIngot(db, date)
+	numWorkers := 2
+	tasks := []func(){
+		func() {
+			mnlzConsumption = castIronConsumptionMnlzSum(db, date)
+		},
+		func() {
+			bcConsumption = castIronConsumptionIngotSum(db, date)
+		},
+		func() {
+			sMeltCount = numberMeltdownsOnrs(db, date)
+		},
+		func() {
+			cPourCount = numberMeltdownsCasting(db, date)
+		},
+		func() {
+			mnlzScrapConsumption = scrapConsumptionMnlzSum(db, date)
+		},
+		func() {
+			bcScrapConsumption = scrapConsumptionIngotSum(db, date)
+		},
+		func() {
+			prodMNLZ = productionMNLZSum(db, date)
+		},
+		func() {
+			prodIngot = productionIngotSum(db, date)
+		},
+		func() {
+			ferroalloysMNLZ = ferroalloysOnMNLZ(db, date)
+		},
+		func() {
+			ferroalloysIngot = ferroalloysOnIngot(db, date)
+		},
+	}
+
+	ExecuteTasks(tasks, numWorkers)
+
 	idOilList = []int{
 		c.GlobalConfig.Measurings.S1Oil,
 		c.GlobalConfig.Measurings.S2Oil,
@@ -56,7 +82,7 @@ func castIronConsumptionMnlzSum(db *sql.DB, date string) float64 {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.ConsumptionMnlz, date)
 	data := database.ExecuteQuery(db, q)
 	sum := Sum(data)
-	logger.Debug("Потребление чугуна МНЛЗ =", sum)
+	logger.Debug("Потребление чугуна МНЛЗ = ", sum)
 	return sum
 }
 

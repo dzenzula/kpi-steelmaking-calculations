@@ -4,6 +4,7 @@ import (
 	c "main/configuration"
 	"main/models"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -136,4 +137,30 @@ func FindSteelGrade(steelType string) (int, int) {
 		}
 	}
 	return 0, 0
+}
+
+func ExecuteTasks(tasks []func(), numWorkers int) {
+    numFields := len(tasks)
+    taskChan := make(chan func(), numFields)
+    var wg sync.WaitGroup
+
+    for i := 0; i < numWorkers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for task := range taskChan {
+                task() // Выполняем задачу
+            }
+        }()
+    }
+
+    for _, task := range tasks {
+        task := task
+        taskChan <- func() {
+            task()
+        }
+    }
+
+    close(taskChan)
+    wg.Wait()
 }

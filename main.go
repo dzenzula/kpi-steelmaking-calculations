@@ -7,8 +7,6 @@ import (
 	"main/database"
 	"main/logger"
 	"main/models"
-	"reflect"
-	"sync"
 	"time"
 )
 
@@ -19,10 +17,10 @@ func main() {
 		logger.InitLogger()
 		logger.Info("Service started work")
 		logger.Debug("Service is in Debug mode")
-		waitUntilMidnight()
+		//waitUntilMidnight()
 
 		startTime := time.Now()
-		date := calc.GetDate(0)
+		date := calc.GetDate(-1)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPgData()
 		pgdbReports := database.ConnectPgReports()
@@ -32,10 +30,10 @@ func main() {
 		report.Date = date
 
 		//calculations(pgdb, date)
-		calculationsWorkers(pgdb, date)
+		calculations(pgdb, date)
 
-		database.InsertPgReport(pgdbReports, *report)
-		database.InsertMsReport(msdb, *report)
+		//database.InsertPgReport(pgdbReports, *report)
+		//database.InsertMsReport(msdb, *report)
 
 		msdb.Close()
 		pgdb.Close()
@@ -50,7 +48,7 @@ func main() {
 
 func waitUntilMidnight() {
 	currentTime := time.Now()
-	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 20, 0, 0, 0, currentTime.Location())
+	targetTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 22, 0, 0, 0, currentTime.Location())
 
 	if currentTime.After(targetTime) {
 		targetTime = targetTime.Add(24 * time.Hour)
@@ -62,418 +60,171 @@ func waitUntilMidnight() {
 }
 
 func calculations(pgdb *sql.DB, date string) {
-	var wg sync.WaitGroup
-	structType := reflect.TypeOf(*report)
-	numFields := structType.NumField() - 1
-	wg.Add(numFields)
-
-	go func() {
-		defer wg.Done()
-		report.CastIronMelting = calc.ConsumptionOfCastIronForMelting(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ScrapMelting = calc.ConsumptionOfScrapForMelting(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SiInCastIron = calc.GetSiInCastIron(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.CastIronTemperature = calc.GetCastIronTemperature(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.GoodCastIron = calc.GetGoodCastIron(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SContent = calc.GetSContent(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZMelting = calc.MNLZMeltingAvgWeight(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.IngotMelting = calc.IngotMeltingAvgWeight(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.O2Content = calc.O2Content(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.LimestoneFlow = calc.LimeFlow(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.DolomiteFlow = calc.DolomiteFlow(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.AluminumPreheating = calc.AluminumPreheating(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MixMelting = calc.MixMelting(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SiCC = calc.FeSiConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SiModel = calc.FeSiModelConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SiMnCC = calc.SiMnConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SiMnModel = calc.SiMnModelConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MnCC = calc.FeMnConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MnModel = calc.FeMnModelConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SlagTruncationRatio = calc.SlagTruncationRatio(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SlagSkimmingRatio = calc.SlagSkimmingRatio(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.CCMeltingCycle = calc.CCMeltingCycleMinutes(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.FePercentageInSlag = calc.FePercentageInSlag(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.SlagSamplingPercentage = calc.SlagSamplingPercentage(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.GoodCCOutput = calc.GoodCCOutput(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.GoodCCMNLZOutput = calc.GoodCCMNLZOutput(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.GoodIngotOutput = calc.GoodCCIngotOutput(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ProcessingTime = calc.ProcessingTime(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ArcTime = calc.ArcTime(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.LimestoneConsumption = calc.LimestoneConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.FluorsparConsumption = calc.FluorsparConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ElectricityConsumption = calc.ElectricityConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.ElectrodeConsumption = calc.ElectrodeConsumption(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.InletTemperature = calc.InletTemperature(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.InletOxidation = calc.InletOxidation(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.CastingCycle = calc.CastingCycle(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.CastingSpeed = calc.CastingSpeed(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.CastingStopperSerial = calc.CastingStopperSerial(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ1OpenSerial = calc.MNLZOpenSerial(pgdb, date, 1)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ2OpenSerial = calc.MNLZOpenSerial(pgdb, date, 2)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ3OpenSerial = calc.MNLZOpenSerial(pgdb, date, 3)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ1Streams = calc.MNLZStreams(pgdb, date, 1)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ2Streams = calc.MNLZStreams(pgdb, date, 2)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ3Streams = calc.MNLZStreams(pgdb, date, 3)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ1RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 1)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ2RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 2)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ3RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 3)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ1MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 1)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ2MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 2)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MNLZ3MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 3)
-	}()
-	go func() {
-		defer wg.Done()
-		report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)
-	}()
-	go func() {
-		defer wg.Done()
-		report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
-	}()
-
-	wg.Wait()
-}
-
-func calculationsWorkers(pgdb *sql.DB, date string) {
 	numWorkers := 2
-	structType := reflect.TypeOf(*report)
-	numFields := structType.NumField() - 1
-	taskChan := make(chan func(*models.Report), numFields)
-
-	var wg sync.WaitGroup
-
-	for i := 0; i < numWorkers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for task := range taskChan {
-				task(report) // Выполняем задачу
-			}
-		}()
-	}
-
-	tasks := []func(*models.Report){
-		func(*models.Report) {
+	tasks := []func(){
+		func() {
 			report.CastIronMelting = calc.ConsumptionOfCastIronForMelting(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ScrapMelting = calc.ConsumptionOfScrapForMelting(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SiInCastIron = calc.GetSiInCastIron(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.CastIronTemperature = calc.GetCastIronTemperature(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.GoodCastIron = calc.GetGoodCastIron(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SContent = calc.GetSContent(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZMelting = calc.MNLZMeltingAvgWeight(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.IngotMelting = calc.IngotMeltingAvgWeight(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.O2Content = calc.O2Content(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.LimestoneFlow = calc.LimeFlow(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.DolomiteFlow = calc.DolomiteFlow(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.AluminumPreheating = calc.AluminumPreheating(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MixMelting = calc.MixMelting(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SiCC = calc.FeSiConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SiModel = calc.FeSiModelConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SiMnCC = calc.SiMnConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SiMnModel = calc.SiMnModelConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MnCC = calc.FeMnConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MnModel = calc.FeMnModelConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SlagTruncationRatio = calc.SlagTruncationRatio(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SlagSkimmingRatio = calc.SlagSkimmingRatio(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.CCMeltingCycle = calc.CCMeltingCycleMinutes(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.FePercentageInSlag = calc.FePercentageInSlag(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.SlagSamplingPercentage = calc.SlagSamplingPercentage(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.GoodCCOutput = calc.GoodCCOutput(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.GoodCCMNLZOutput = calc.GoodCCMNLZOutput(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.GoodIngotOutput = calc.GoodCCIngotOutput(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ProcessingTime = calc.ProcessingTime(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ArcTime = calc.ArcTime(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.LimestoneConsumption = calc.LimestoneConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.FluorsparConsumption = calc.FluorsparConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ArgonOxygenConsumption = calc.ArgonOxygenConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ElectricityConsumption = calc.ElectricityConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.ElectrodeConsumption = calc.ElectrodeConsumption(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.InletTemperature = calc.InletTemperature(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.InletOxidation = calc.InletOxidation(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.CastingCycle = calc.CastingCycle(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.CastingSpeed = calc.CastingSpeed(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.CastingStopperSerial = calc.CastingStopperSerial(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ1OpenSerial = calc.MNLZOpenSerial(pgdb, date, 1)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ2OpenSerial = calc.MNLZOpenSerial(pgdb, date, 2)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ3OpenSerial = calc.MNLZOpenSerial(pgdb, date, 3)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ1Streams = calc.MNLZStreams(pgdb, date, 1)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ2Streams = calc.MNLZStreams(pgdb, date, 2)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ3Streams = calc.MNLZStreams(pgdb, date, 3)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ1RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 1)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ2RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 2)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ3RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 3)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ1MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 1)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ2MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 2)
 		},
-		func(*models.Report) {
+		func() {
 			report.MNLZ3MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 3)
 		},
-		func(*models.Report) {
+		func() {
 			report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)
 		},
-		func(*models.Report) {
+		func() {
 			report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, date)
 		},
 	}
 
-	for _, task := range tasks {
-		taskChan <- task
-	}
-
-	close(taskChan)
-	wg.Wait()
+	calc.ExecuteTasks(tasks, numWorkers)
 }
