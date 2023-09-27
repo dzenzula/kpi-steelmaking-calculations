@@ -14,6 +14,8 @@ import (
 var report = new(models.Report)
 
 func main() {
+	logger.Info("Service started work")
+	logger.Debug("Service is in Debug mode")
 	logger.InitLogger()
 	cacheData := cache.ReadCache()
 	if cacheData.Date == "" {
@@ -24,36 +26,35 @@ func main() {
 		cache.WriteCache(date)
 	}
 
-	missedDates := calc.GetMissingDates(cacheData.Date)
-
-	for _, date := range missedDates {
-		logger.Info("Service started work")
-		logger.Debug("Service is in Debug mode")
+	for {
 		waitUntilMidnight()
+		missedDates := calc.GetMissingDates(cacheData.Date)
 
-		startTime := time.Now()
-		msdb := database.ConnectMs()
-		pgdb := database.ConnectPgData()
-		pgdbReports := database.ConnectPgReports()
+		for _, date := range missedDates {
+			startTime := time.Now()
+			msdb := database.ConnectMs()
+			pgdb := database.ConnectPgData()
+			pgdbReports := database.ConnectPgReports()
 
-		calc.CacheInit(pgdb, date)
+			calc.CacheInit(pgdb, date)
 
-		report.Date = date
+			report.Date = date
 
-		calculations(pgdb, date)
+			calculations(pgdb, date)
 
-		database.InsertPgReport(pgdbReports, *report)
-		database.InsertMsReport(msdb, *report)
-		cache.WriteCache(date)
+			database.InsertPgReport(pgdbReports, *report)
+			database.InsertMsReport(msdb, *report)
+			cache.WriteCache(date)
 
-		msdb.Close()
-		pgdb.Close()
-		pgdbReports.Close()
-		logger.Info("Calculations is done!")
+			msdb.Close()
+			pgdb.Close()
+			pgdbReports.Close()
+			logger.Info("Calculations is done!")
 
-		elapsedTime := time.Since(startTime)
-		logger.Info("Run time: ", elapsedTime)
-		fmt.Printf("Run time: %s\n", elapsedTime)
+			elapsedTime := time.Since(startTime)
+			logger.Info("Run time: ", elapsedTime)
+			fmt.Printf("Run time: %s\n", elapsedTime)
+		}
 	}
 }
 
