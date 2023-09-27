@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"main/cache"
 	calc "main/calculations"
 	"main/database"
 	"main/logger"
@@ -13,14 +14,23 @@ import (
 var report = new(models.Report)
 
 func main() {
-	for {
-		logger.InitLogger()
+	logger.InitLogger()
+	cacheData := cache.ReadCache()
+	if cacheData.Date == "" {
+		currentTime := time.Now()
+		localTime := currentTime.Local()
+		date := time.Date(localTime.Year(), localTime.Month(), localTime.Day(), 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+		cacheData.Date = date
+	}
+
+	missedDates := calc.GetMissingDates(cacheData.Date)
+
+	for _, date := range missedDates {
 		logger.Info("Service started work")
 		logger.Debug("Service is in Debug mode")
-		//waitUntilMidnight()
+		waitUntilMidnight()
 
 		startTime := time.Now()
-		date := calc.GetDate(-1)
 		msdb := database.ConnectMs()
 		pgdb := database.ConnectPgData()
 		pgdbReports := database.ConnectPgReports()
@@ -29,11 +39,11 @@ func main() {
 
 		report.Date = date
 
-		//calculations(pgdb, date)
 		calculations(pgdb, date)
 
-		//database.InsertPgReport(pgdbReports, *report)
-		//database.InsertMsReport(msdb, *report)
+		database.InsertPgReport(pgdbReports, *report)
+		database.InsertMsReport(msdb, *report)
+		cache.WriteCache(date)
 
 		msdb.Close()
 		pgdb.Close()
@@ -55,8 +65,9 @@ func waitUntilMidnight() {
 	}
 
 	timeToWait := targetTime.Sub(currentTime)
-	logger.Info("The calculation will be in", timeToWait)
+	logger.Info("Next calculation will be in", timeToWait)
 	time.Sleep(timeToWait)
+	logger.InitLogger()
 }
 
 func calculations(pgdb *sql.DB, date string) {

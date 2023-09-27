@@ -2,6 +2,7 @@ package calculations
 
 import (
 	c "main/configuration"
+	"main/logger"
 	"main/models"
 	"strconv"
 	"sync"
@@ -43,12 +44,32 @@ func Len(m []models.Query) float64 {
 	return res
 }
 
-func GetDate(i int) string {
-	currentTime := time.Now()
-	localTime := currentTime.Local()
-	date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()+i, 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+func GetMissingDates(cacheDate string) []string {
+	targetTime := time.Date(0, 0, 0, 19, 0, 0, 0, time.UTC)
+	parsedDate, err := time.Parse("2006-01-02 15:04:05", cacheDate)
+	if err != nil {
+		logger.Error("Error parsing the date: ", err.Error())
+		return nil
+	}
 
-	return date
+	currentDate := parsedDate
+	missingDates := []string{}
+
+	for currentDate.Before(time.Now()) {
+		if currentDate.Day() == time.Now().Day() && time.Now().Hour() < targetTime.Hour() {
+			// Пропускаем текущий день
+		} else {
+			targetDate := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), targetTime.Hour(), targetTime.Minute(), targetTime.Second(), 0, time.Now().Local().Location())
+			if currentDate.Hour() > targetTime.Hour() || (currentDate.Hour() == targetTime.Hour() && currentDate.Minute() > targetTime.Minute()) {
+				targetDate = targetDate.Add(24 * time.Hour)
+			}
+
+			missingDates = append(missingDates, targetDate.Format("2006-01-02 15:04:05"))
+		}
+		currentDate = currentDate.Add(24 * time.Hour)
+	}
+
+	return missingDates
 }
 
 func SafeDivision(a, b float64) float64 {
@@ -140,27 +161,27 @@ func FindSteelGrade(steelType string) (int, int) {
 }
 
 func ExecuteTasks(tasks []func(), numWorkers int) {
-    numFields := len(tasks)
-    taskChan := make(chan func(), numFields)
-    var wg sync.WaitGroup
+	numFields := len(tasks)
+	taskChan := make(chan func(), numFields)
+	var wg sync.WaitGroup
 
-    for i := 0; i < numWorkers; i++ {
-        wg.Add(1)
-        go func() {
-            defer wg.Done()
-            for task := range taskChan {
-                task() // Выполняем задачу
-            }
-        }()
-    }
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for task := range taskChan {
+				task() // Выполняем задачу
+			}
+		}()
+	}
 
-    for _, task := range tasks {
-        task := task
-        taskChan <- func() {
-            task()
-        }
-    }
+	for _, task := range tasks {
+		task := task
+		taskChan <- func() {
+			task()
+		}
+	}
 
-    close(taskChan)
-    wg.Wait()
+	close(taskChan)
+	wg.Wait()
 }
