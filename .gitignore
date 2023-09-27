@@ -2,3 +2,4 @@
 *.log
 configuration/config.yml
 *.exe
+*.cache.yml

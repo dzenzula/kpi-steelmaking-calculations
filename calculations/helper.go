@@ -52,20 +52,17 @@ func GetMissingDates(cacheDate string) []string {
 		return nil
 	}
 
-	currentDate := parsedDate
+	currentDate := parsedDate.Add(24 * time.Hour)
 	missingDates := []string{}
 
 	for currentDate.Before(time.Now()) {
-		if currentDate.Day() == time.Now().Day() && time.Now().Hour() < targetTime.Hour() {
-			// Пропускаем текущий день
-		} else {
-			targetDate := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), targetTime.Hour(), targetTime.Minute(), targetTime.Second(), 0, time.Now().Local().Location())
-			if currentDate.Hour() > targetTime.Hour() || (currentDate.Hour() == targetTime.Hour() && currentDate.Minute() > targetTime.Minute()) {
-				targetDate = targetDate.Add(24 * time.Hour)
-			}
+		targetDate := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), targetTime.Hour(), targetTime.Minute(), 0, 0, time.UTC)
 
-			missingDates = append(missingDates, targetDate.Format("2006-01-02 15:04:05"))
+		if currentDate.After(targetDate) {
+			targetDate = targetDate.Add(24 * time.Hour)
 		}
+
+		missingDates = append(missingDates, targetDate.Format("2006-01-02 15:04"))
 		currentDate = currentDate.Add(24 * time.Hour)
 	}
 
