@@ -21,6 +21,7 @@ func main() {
 		localTime := currentTime.Local()
 		date := time.Date(localTime.Year(), localTime.Month(), localTime.Day(), 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
 		cacheData.Date = date
+		cache.WriteCache(date)
 	}
 
 	missedDates := calc.GetMissingDates(cacheData.Date)
