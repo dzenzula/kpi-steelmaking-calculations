@@ -46,7 +46,7 @@ func Len(m []models.Query) float64 {
 
 func GetMissingDates(cacheDate string) []string {
 	targetTime := time.Date(0, 0, 0, 19, 0, 0, 0, time.UTC)
-	parsedDate, err := time.Parse("2006-01-02 15:04:05", cacheDate)
+	parsedDate, err := time.Parse("2006-01-02 15:04", cacheDate)
 	if err != nil {
 		logger.Error("Error parsing the date: ", err.Error())
 		return nil
