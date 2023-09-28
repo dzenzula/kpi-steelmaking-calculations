@@ -82,11 +82,16 @@ func AvgDiffDate(dtn []models.Query, dtk []models.Query) float64 {
 	layout := "2006-01-02 15:04:05Z"
 
 	for i := range dtn {
-		time1, _ := time.Parse(layout, *dtn[i].Value)
-		time2, _ := time.Parse(layout, *dtk[i].Value)
+		if dtn[i].Value != nil && dtk[i].Value != nil {
+			time1, _ := time.Parse(layout, *dtn[i].Value)
+			time2, _ := time.Parse(layout, *dtk[i].Value)
 
-		minutesDifference := time2.Sub(time1).Minutes()
-		differences = append(differences, minutesDifference)
+			minutesDifference := time2.Sub(time1).Minutes()
+			differences = append(differences, minutesDifference)
+		} else {
+			differences = append(differences, 0.0)
+		}
+
 	}
 
 	if len(differences) == 0 {
