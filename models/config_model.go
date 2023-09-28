@@ -26,8 +26,8 @@ type Querries struct {
 	GetData                      string `yaml:"get_data"`
 	GetSlagTruncation            string `yaml:"get_slag_truncation"`
 	GetGreaterThanZeroData       string `yaml:"get_data_greater_than_zero"`
-	GetFerroalloysForMNLZ        string `yaml:"get_pheroalloy_mnlz"`
-	GetFerroalloysForIngots      string `yaml:"get_pheroalloy_ingot"`
+	GetFerroalloysForMNLZ        string `yaml:"get_pherroalloy_mnlz"`
+	GetFerroalloysForIngots      string `yaml:"get_pherroalloy_ingot"`
 	GetUpk                       string `yaml:"get_upk"`
 	GetGoodCastIron              string `yaml:"get_good_cast_iron"`
 	GetInletTemperatureOxidation string `yaml:"get_inlet_temperature_oxidation"`

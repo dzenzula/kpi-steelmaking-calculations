@@ -16,7 +16,7 @@ var report = new(models.Report)
 func main() {
 	logger.Info("Service started work")
 	logger.Debug("Service is in Debug mode")
-	logger.InitLogger()	
+	logger.InitLogger()
 
 	for {
 		waitUntilMidnight()
@@ -24,7 +24,7 @@ func main() {
 		cacheData := cache.ReadCache()
 		if cacheData.Date == "" {
 			localTime := time.Now().Local()
-			date := time.Date(localTime.Year(), localTime.Month(), localTime.Day() - 1, 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
+			date := time.Date(localTime.Year(), localTime.Month(), localTime.Day()-1, 19, 0, 0, 0, localTime.Location()).Format("2006-01-02 15:04:05")
 			cacheData.Date = date
 			cache.WriteCache(date)
 		}
