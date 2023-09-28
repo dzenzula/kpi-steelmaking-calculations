@@ -1168,9 +1168,8 @@ func CastingStopperSerial(db *sql.DB, date string) float64 {
 
 		if len(averages) == len(endSeries) {
 			for i, v := range averages {
-				if endSeries[i] == 1 && *v == 0 {
-					value := serelization[i]
-					res += value
+				if v != nil && endSeries[i] == 1 && *v == 0 {
+					res += serelization[i]
 					count++
 				}
 			}
@@ -1188,9 +1187,8 @@ func calculateOpenSerial(averages []*float64, endSeries []float64, serelization 
 	count, res := 0.0, 0.0
 	if len(averages) == len(endSeries) {
 		for i, v := range averages {
-			if endSeries[i] == 1 && *v > 0 {
-				value := serelization[i]
-				res += value
+			if v != nil && endSeries[i] == 1 && *v > 0 {
+				res += serelization[i]
 				count++
 			}
 		}
