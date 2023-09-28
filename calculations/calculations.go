@@ -965,7 +965,7 @@ func ElectricityConsumption(db *sql.DB, date string) float64 {
 		meltingCount += getHeatStartCount(db, date, n)
 	}
 
-	res := sumEnergy / meltingCount / 143
+	res := SafeDivision(sumEnergy, meltingCount) / 143.0
 
 	logger.Debug("Расход Электричества = Электричество / Кол-во открытий / 143")
 	logger.Debug(fmt.Sprintf("%f = %f / %f / 143", res, sumEnergy, meltingCount))
@@ -988,7 +988,7 @@ func InletTemperature(db *sql.DB, date string) float64 {
 		logger.Debug(fmt.Sprintf("УПК%d Замер1 Т = %f", i, avg))
 		res = res + avg
 	}
-	res = res / 3
+	res = res / 3.0
 
 	logger.Debug("Температура по приходу = (УПК1 + УПК2 + УПК3) / 3")
 	logger.Debug("Температура по приходу = ", res)
@@ -1006,7 +1006,7 @@ func InletOxidation(db *sql.DB, date string) float64 {
 		logger.Debug(fmt.Sprintf("УПК%d Замер1 О2 = %f", i, avg))
 		res = res + avg
 	}
-	res = res / 3
+	res = res / 3.0
 
 	logger.Debug("Окисленность по приходу = (УПК1 + УПК2 + УПК3) / 3")
 	logger.Debug("Окисленность по приходу = ", res)
