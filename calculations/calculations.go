@@ -1417,7 +1417,7 @@ func MetalRetentionTime(db *sql.DB, date string) float64 {
 		logger.Debug("Время нахождения металла в ковше (до разливки) = 0.0")
 		return 0.0
 	}
-	res := AvgDiffDate(dtn, dtk)
+	res := AvgDiffDate(dtk, dtn)
 
 	logger.Debug("Время нахождения металла в ковше (до разливки) = ", res)
 	return res
