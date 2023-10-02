@@ -195,15 +195,12 @@ func calculations(pgdb *sql.DB, date string) {
 		},
 		func() {
 			report.CastingStopperSerial = calc.CastingStopperSerial(pgdb, date)
-		},
-		func() {
 			report.MNLZ1OpenSerial = calc.MNLZOpenSerial(pgdb, date, 1)
-		},
-		func() {
 			report.MNLZ2OpenSerial = calc.MNLZOpenSerial(pgdb, date, 2)
-		},
-		func() {
 			report.MNLZ3OpenSerial = calc.MNLZOpenSerial(pgdb, date, 3)
+			report.MNLZ1MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 1)
+			report.MNLZ2MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 2)
+			report.MNLZ3MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 3)
 		},
 		func() {
 			report.MNLZ1Streams = calc.MNLZStreams(pgdb, date, 1)
@@ -222,15 +219,6 @@ func calculations(pgdb *sql.DB, date string) {
 		},
 		func() {
 			report.MNLZ3RepackingDuration = calc.MNLZRepackingDuration(pgdb, date, 3)
-		},
-		func() {
-			report.MNLZ1MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 1)
-		},
-		func() {
-			report.MNLZ2MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 2)
-		},
-		func() {
-			report.MNLZ3MeltTempDeviation = calc.MNLZMeltTempDeviation(pgdb, date, 3)
 		},
 		func() {
 			report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, date)

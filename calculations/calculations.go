@@ -1274,6 +1274,16 @@ func getSteelGrades(db *sql.DB, date string, n int) []*string {
 	return grades
 }
 
+// Кол-во плавок МНЛЗ
+func getMeltingMnlzCount(db *sql.DB, date string, n int) float64 {
+	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, date, c.GlobalConfig.Measurings.DtBegin, n)
+	data := database.ExecuteQuery(db, q)
+	len := Len(data)
+
+	logger.Debug(fmt.Sprintf("Количество плавок МНЛЗ%d = %f", n, len))
+	return len
+}
+
 // Температура МНЛЗ
 func getTemperatureMnlz(db *sql.DB, date string, n int) float64 {
 	var withinCount int
@@ -1296,19 +1306,29 @@ func getTemperatureMnlz(db *sql.DB, date string, n int) float64 {
 	}
 
 	averages := CalculateAverages(valueArrays)
+	if averages == nil {
+		return 1.0 - 0.0
+	}
 	steelGrades := getSteelGrades(db, date, n)
 	serialization := getSerelization(db, date, n)
 
 	for i, steel := range steelGrades {
+		if steel == nil {
+			continue
+		}
 		min, max := FindSteelGrade(*steel)
 		logger.Debug(fmt.Sprintf("Марка стали = %s, Min = %d, Max = %d", *steel, min, max))
-		logger.Debug(fmt.Sprintf("Серийность = %f, Температура = %f", serialization[i], *averages[i]))
+		if averages[i] != nil {
+			logger.Debug(fmt.Sprintf("Серийность = %f, Температура = %f", serialization[i], *averages[i]))
+		} else {
+			logger.Debug(fmt.Sprintf("Серийность = %f, Температура = nil", serialization[i]))
+		}
 		if serialization[i] == 1.0 || averages[i] == nil || (*averages[i] < float64(max) && *averages[i] > float64(min)) {
 			withinCount++
 		}
 	}
 
-	meltCount := getMeltingCount(db, date)
+	meltCount := getMeltingMnlzCount(db, date, n)
 	res := 1.0 - SafeDivision(float64(withinCount), meltCount)
 
 	logger.Debug(fmt.Sprintf("Плавки с отклонением по температуре МНЛЗ%d = кол-во норм / кол-во плавок", n))

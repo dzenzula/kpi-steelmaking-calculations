@@ -113,29 +113,51 @@ func CalculateAverages(data [][]*float64) []*float64 {
 		return nil
 	}
 
-	n := len(data[0])
+	n := findMaxLength(data)
 	averages := make([]*float64, n)
 	counts := make([]int, n)
 
+	updateAverages(data, averages, counts)
+
+	normalizeAverages(averages, counts)
+
+	return averages
+}
+
+func findMaxLength(data [][]*float64) int {
+	maxLength := len(data[0])
+	for _, d := range data {
+		if len(d) > maxLength {
+			maxLength = len(d)
+		}
+	}
+	return maxLength
+}
+
+func updateAverages(data [][]*float64, averages []*float64, counts []int) {
 	for _, row := range data {
 		for i, val := range row {
 			if val != nil {
-				if averages[i] == nil {
-					averages[i] = new(float64)
-				}
-				*averages[i] += float64(*val)
-				counts[i]++
+				updateAverage(i, val, averages, counts)
 			}
 		}
 	}
+}
 
-	for i := 0; i < n; i++ {
+func updateAverage(index int, value *float64, averages []*float64, counts []int) {
+	if averages[index] == nil {
+		averages[index] = new(float64)
+	}
+	*averages[index] += float64(*value)
+	counts[index]++
+}
+
+func normalizeAverages(averages []*float64, counts []int) {
+	for i := range averages {
 		if averages[i] != nil {
 			*averages[i] /= float64(counts[i])
 		}
 	}
-
-	return averages
 }
 
 func ParseFloatValues(queries []models.Query) []*float64 {
