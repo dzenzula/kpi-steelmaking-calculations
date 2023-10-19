@@ -44,29 +44,53 @@ func Len(m []models.Query) float64 {
 	return res
 }
 
-func GetMissingDates(cacheDate string) []string {
-	targetTime := time.Date(0, 0, 0, 19, 0, 0, 0, time.UTC)
-	parsedDate, err := time.Parse("2006-01-02 15:04", cacheDate)
+func GetMissingWeeks(weekDateTracker string) []string {
+	layout := "2006-01-02 15:04"
+	currentTime := time.Now()
+	parsedWeek, err := time.Parse(layout, weekDateTracker)
 	if err != nil {
-		logger.Error("Error parsing the date: ", err.Error())
+		logger.Error("Error parsing the week date tracker:", err.Error())
 		return nil
 	}
 
-	currentDate := parsedDate.Add(24 * time.Hour)
-	missingDates := []string{}
+	missingWeeks := []string{}
 
-	for currentDate.Before(time.Now()) {
-		targetDate := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), targetTime.Hour(), targetTime.Minute(), 0, 0, time.UTC)
+	for {
+		nextWeek := parsedWeek.AddDate(0, 0, 7)
 
-		if currentDate.After(targetDate) {
-			targetDate = targetDate.Add(24 * time.Hour)
+		if nextWeek.After(currentTime) {
+			break
 		}
 
-		missingDates = append(missingDates, targetDate.Format("2006-01-02 15:04"))
-		currentDate = currentDate.Add(24 * time.Hour)
+		missingWeeks = append(missingWeeks, nextWeek.Format(layout))
+		parsedWeek = nextWeek
 	}
 
-	return missingDates
+	return missingWeeks
+}
+
+func GetMissingMonths(monthDateTracker string) []string {
+	currentTime := time.Now()
+	parsedMonth, err := time.Parse("2006-01-02 15:04", monthDateTracker)
+	if err != nil {
+		logger.Error("Error parsing the month date tracker:", err.Error())
+		return nil
+	}
+
+	missingMonths := []string{}
+
+	for {
+		nextMonth := parsedMonth.AddDate(0, 1, 0)
+
+		if nextMonth.After(currentTime) {
+			break
+		}
+
+		missingMonths = append(missingMonths, nextMonth.Format("2006-01-02"))
+		parsedMonth = nextMonth
+	}
+
+	return missingMonths
 }
 
 func SafeDivision(a, b float64) float64 {

@@ -57,4 +57,5 @@ type Report struct {
 	MNLZ3MeltTempDeviation float64 `stbl:"\"MNLZ3MeltTempDeviation\""`
 	GoodMNLZOutput         float64 `stbl:"\"GoodMNLZOutput\""`
 	MetalRetentionTime     float64 `stbl:"\"MetalRetentionTime\""`
+	Weekly                 bool    `stbl:"\"Weekly\""`
 }

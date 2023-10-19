@@ -9,7 +9,8 @@ import (
 )
 
 type Cache struct {
-	Date string `yaml:"date"`
+	WeeklyDate string `yaml:"weekly_date"`
+	MonthDate  string `yaml:"month_date"`
 }
 
 func ReadCache() *Cache {
@@ -33,12 +34,17 @@ func ReadCache() *Cache {
 	return &cache
 }
 
-func WriteCache(date string)  {
+func WriteCache(monthDate *string, weeklyDate *string) {
 	filename := c.GlobalConfig.CachePath
 	isFileExist(filename)
 
-	var cache Cache
-	cache.Date = date
+	cache := ReadCache()
+	if monthDate != nil {
+		cache.MonthDate = *monthDate
+	}
+	if weeklyDate != nil {
+		cache.WeeklyDate = *weeklyDate
+	}
 
 	yamlData, err := yaml.Marshal(&cache)
 	if err != nil {
