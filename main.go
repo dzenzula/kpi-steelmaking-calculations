@@ -108,7 +108,7 @@ func waitForFirstDayOfMonth() {
 
 			calc.CacheInit(pgdb, startDate, date)
 
-			monthlyReport.Date = date
+			monthlyReport.Date = startDate
 			monthlyReport.WeekNumber = nil
 
 			calculations(pgdb, startDate, date, monthlyReport)
