@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-var report = new(models.Report)
+var weeklyReport = new(models.Report)
+var monthlyReport = new(models.Report)
 var layout string = "2006-01-02 15:04:05"
 
 func main() {
@@ -35,9 +36,6 @@ func main() {
 		cache.WriteCache(&date, nil)
 	}
 
-	var missedDates []string = calc.GetMissingWeeks(cache.ReadCache().WeeklyDate)
-	fmt.Println(missedDates)
-
 	waitForMonday()
 	waitForFirstDayOfMonth()
 
@@ -49,6 +47,7 @@ func waitForMonday() {
 	var missedDates []string = calc.GetMissingWeeks(cache.ReadCache().WeeklyDate)
 	location := time.Local
 	nextMonday := getNextMonday(time.Now(), location)
+	//nextMonday := wait().Add(10 * time.Second)
 
 	mondayJob := func() {
 		fmt.Printf("Running Monday's job at %v\n", time.Now())
@@ -64,13 +63,14 @@ func waitForMonday() {
 
 			calc.CacheInit(pgdb, startDate, date)
 
-			report.Date = startDate
-			report.Weekly = true
+			weeklyReport.Date = startDate
+			_, week := parsedDate.ISOWeek()
+			weeklyReport.WeekNumber = &week
 
-			calculations(pgdb, startDate, date)
+			calculations(pgdb, startDate, date, weeklyReport)
 
-			database.InsertPgReport(pgdbReports, *report)
-			database.InsertMsReport(msdb, *report)
+			database.InsertPgReport(pgdbReports, *weeklyReport)
+			database.InsertMsReport(msdb, *weeklyReport)
 			cache.WriteCache(nil, &date)
 
 			msdb.Close()
@@ -92,6 +92,7 @@ func waitForFirstDayOfMonth() {
 	var missedDates []string = calc.GetMissingMonths(cache.ReadCache().MonthDate)
 	location := time.Local
 	nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), location)
+	//nextFirstDayOfMonth := wait()
 
 	firstDayOfMonthJob := func() {
 		fmt.Printf("Running first day of month's job at %v\n", time.Now())
@@ -107,14 +108,14 @@ func waitForFirstDayOfMonth() {
 
 			calc.CacheInit(pgdb, startDate, date)
 
-			report.Date = date
-			report.Weekly = false
+			monthlyReport.Date = date
+			monthlyReport.WeekNumber = nil
 
-			calculations(pgdb, startDate, date)
+			calculations(pgdb, startDate, date, monthlyReport)
 
-			database.InsertPgReport(pgdbReports, *report)
-			database.InsertMsReport(msdb, *report)
-			cache.WriteCache(nil, &date)
+			database.InsertPgReport(pgdbReports, *monthlyReport)
+			database.InsertMsReport(msdb, *monthlyReport)
+			cache.WriteCache(&date, nil)
 
 			msdb.Close()
 			pgdb.Close()
@@ -159,7 +160,17 @@ func getNextFirstDayOfMonth(t time.Time, location *time.Location) time.Time {
 	return nextFirstDayOfTheMonth
 }
 
-func calculations(pgdb *sql.DB, startDate string, endDate string) {
+func wait() time.Time {
+	duration := time.Until(time.Now().Truncate(1 * time.Minute).Add(1 * time.Minute))
+	t := time.Now().Add(duration)
+
+	logger.Info("Time until the next iteration:", t)
+	fmt.Println("Time until the next iteration:", t)
+
+	return t
+}
+
+func calculations(pgdb *sql.DB, startDate string, endDate string, report *models.Report) {
 	numWorkers := 2
 	tasks := []func(){
 		func() {
@@ -172,7 +183,7 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.SiInCastIron = calc.GetSiInCastIron(pgdb, startDate, endDate)
 		},
 		func() {
-			report.CastIronTemperature = calc.GetCastIronTemperature(pgdb, startDate, endDate)
+			report.CastIronTemperature = int(calc.GetCastIronTemperature(pgdb, startDate, endDate))
 		},
 		func() {
 			report.GoodCastIron = calc.GetGoodCastIron(pgdb, startDate, endDate)
@@ -187,7 +198,7 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.IngotMelting = calc.IngotMeltingAvgWeight(pgdb, startDate, endDate)
 		},
 		func() {
-			report.O2Content = calc.O2Content(pgdb, startDate, endDate)
+			report.O2Content = int(calc.O2Content(pgdb, startDate, endDate))
 		},
 		func() {
 			report.LimestoneFlow = calc.LimeFlow(pgdb, startDate, endDate)
@@ -226,7 +237,7 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.SlagSkimmingRatio = calc.SlagSkimmingRatio(pgdb, startDate, endDate)
 		},
 		func() {
-			report.CCMeltingCycle = calc.CCMeltingCycleMinutes(pgdb, startDate, endDate)
+			report.CCMeltingCycle = int(calc.CCMeltingCycleMinutes(pgdb, startDate, endDate))
 		},
 		func() {
 			report.FePercentageInSlag = calc.FePercentageInSlag(pgdb, startDate, endDate)
@@ -244,10 +255,10 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.GoodIngotOutput = calc.GoodCCIngotOutput(pgdb, startDate, endDate)
 		},
 		func() {
-			report.ProcessingTime = calc.ProcessingTime(pgdb, startDate, endDate)
+			report.ProcessingTime = int(calc.ProcessingTime(pgdb, startDate, endDate))
 		},
 		func() {
-			report.ArcTime = calc.ArcTime(pgdb, startDate, endDate)
+			report.ArcTime = int(calc.ArcTime(pgdb, startDate, endDate))
 		},
 		func() {
 			report.LimestoneConsumption = calc.LimestoneConsumption(pgdb, startDate, endDate)
@@ -265,16 +276,16 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.ElectrodeConsumption = calc.ElectrodeConsumption(pgdb, startDate, endDate)
 		},
 		func() {
-			report.InletTemperature = calc.InletTemperature(pgdb, startDate, endDate)
+			report.InletTemperature = int(calc.InletTemperature(pgdb, startDate, endDate))
 		},
 		func() {
-			report.InletOxidation = calc.InletOxidation(pgdb, startDate, endDate)
+			report.InletOxidation = int(calc.InletOxidation(pgdb, startDate, endDate))
 		},
 		func() {
 			report.UPKSlagAnalysis = calc.UPKSlagAnalysis(pgdb, startDate, endDate)
 		},
 		func() {
-			report.CastingCycle = calc.CastingCycle(pgdb, startDate, endDate)
+			report.CastingCycle = int(calc.CastingCycle(pgdb, startDate, endDate))
 		},
 		func() {
 			report.CastingSpeed = calc.CastingSpeed(pgdb, startDate, endDate)
@@ -310,7 +321,7 @@ func calculations(pgdb *sql.DB, startDate string, endDate string) {
 			report.GoodMNLZOutput = calc.GoodMNLZOutput(pgdb, startDate, endDate)
 		},
 		func() {
-			report.MetalRetentionTime = calc.MetalRetentionTime(pgdb, startDate, endDate)
+			report.MetalRetentionTime = int(calc.MetalRetentionTime(pgdb, startDate, endDate))
 		},
 	}
 
