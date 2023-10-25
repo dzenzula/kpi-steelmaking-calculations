@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+var layout string = "2006-01-02 15:04:05"
+
 func Sum(m []models.Query) float64 {
 	var res float64
 
@@ -24,14 +26,16 @@ func Sum(m []models.Query) float64 {
 
 func Avg(m []models.Query) float64 {
 	var res float64
+	var count float64 = 0
 
 	for _, q := range m {
 		if q.Value != nil {
 			v, _ := strconv.ParseFloat(*q.Value, 64)
 			res += v
+			count++
 		}
 	}
-	res = SafeDivision(res, float64(len(m)))
+	res = SafeDivision(res, float64(count))
 
 	return res
 }
@@ -45,7 +49,7 @@ func Len(m []models.Query) float64 {
 }
 
 func GetMissingWeeks(weekDateTracker string) []string {
-	layout := "2006-01-02 15:04"
+
 	currentTime := time.Now()
 	parsedWeek, err := time.Parse(layout, weekDateTracker)
 	if err != nil {
@@ -71,7 +75,7 @@ func GetMissingWeeks(weekDateTracker string) []string {
 
 func GetMissingMonths(monthDateTracker string) []string {
 	currentTime := time.Now()
-	parsedMonth, err := time.Parse("2006-01-02 15:04", monthDateTracker)
+	parsedMonth, err := time.Parse(layout, monthDateTracker)
 	if err != nil {
 		logger.Error("Error parsing the month date tracker:", err.Error())
 		return nil
@@ -86,7 +90,7 @@ func GetMissingMonths(monthDateTracker string) []string {
 			break
 		}
 
-		missingMonths = append(missingMonths, nextMonth.Format("2006-01-02"))
+		missingMonths = append(missingMonths, nextMonth.Format(layout))
 		parsedMonth = nextMonth
 	}
 
