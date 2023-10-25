@@ -6,12 +6,12 @@ type Report struct {
 	CastIronMelting        float64 `stbl:"\"CastIronMelting\""`
 	ScrapMelting           float64 `stbl:"\"ScrapMelting\""`
 	SiInCastIron           float64 `stbl:"\"SiInCastIron\""`
-	CastIronTemperature    float64 `stbl:"\"CastIronTemperature\""`
+	CastIronTemperature    int     `stbl:"\"CastIronTemperature\""`
 	GoodCastIron           float64 `stbl:"\"GoodCastIron\""`
 	SContent               float64 `stbl:"\"SContent\""`
 	MNLZMelting            float64 `stbl:"\"MNLZMelting\""`
 	IngotMelting           float64 `stbl:"\"IngotMelting\""`
-	O2Content              float64 `stbl:"\"O2Content\""`
+	O2Content              int     `stbl:"\"O2Content\""`
 	LimestoneFlow          float64 `stbl:"\"LimestoneFlow\""`
 	DolomiteFlow           float64 `stbl:"\"DolomiteFlow\""`
 	AluminumPreheating     float64 `stbl:"\"AluminumPreheating\""`
@@ -24,23 +24,23 @@ type Report struct {
 	MnModel                float64 `stbl:"\"MnModel\""`
 	SlagTruncationRatio    float64 `stbl:"\"SlagTruncationRatio\""`
 	SlagSkimmingRatio      float64 `stbl:"\"SlagSkimmingRatio\""`
-	CCMeltingCycle         float64 `stbl:"\"CCMeltingCycle\""`
+	CCMeltingCycle         int     `stbl:"\"CCMeltingCycle\""`
 	FePercentageInSlag     float64 `stbl:"\"FePercentageInSlag\""`
 	SlagSamplingPercentage float64 `stbl:"\"SlagSamplingPercentage\""`
 	GoodCCOutput           float64 `stbl:"\"GoodCCOutput\""`
 	GoodCCMNLZOutput       float64 `stbl:"\"GoodCCMNLZOutput\""`
 	GoodIngotOutput        float64 `stbl:"\"GoodIngotOutput\""`
-	ProcessingTime         float64 `stbl:"\"ProcessingTime\""`
-	ArcTime                float64 `stbl:"\"ArcTime\""`
+	ProcessingTime         int     `stbl:"\"ProcessingTime\""`
+	ArcTime                int     `stbl:"\"ArcTime\""`
 	LimestoneConsumption   float64 `stbl:"\"LimestoneConsumption\""`
 	FluorsparConsumption   float64 `stbl:"\"FluorsparConsumption\""`
 	ArgonOxygenConsumption float64 `stbl:"\"ArgonOxygenConsumption\""`
 	ElectricityConsumption float64 `stbl:"\"ElectricityConsumption\""`
 	ElectrodeConsumption   float64 `stbl:"\"ElectrodeConsumption\""`
-	InletTemperature       float64 `stbl:"\"InletTemperature\""`
-	InletOxidation         float64 `stbl:"\"InletOxidation\""`
+	InletTemperature       int     `stbl:"\"InletTemperature\""`
+	InletOxidation         int     `stbl:"\"InletOxidation\""`
 	UPKSlagAnalysis        float64 `stbl:"\"UPKSlagAnalysis\""`
-	CastingCycle           float64 `stbl:"\"CastingCycle\""`
+	CastingCycle           int     `stbl:"\"CastingCycle\""`
 	CastingSpeed           float64 `stbl:"\"CastingSpeed\""`
 	CastingStopperSerial   float64 `stbl:"\"CastingStopperSerial\""`
 	MNLZ1OpenSerial        float64 `stbl:"\"MNLZ1OpenSerial\""`
@@ -56,6 +56,6 @@ type Report struct {
 	MNLZ2MeltTempDeviation float64 `stbl:"\"MNLZ2MeltTempDeviation\""`
 	MNLZ3MeltTempDeviation float64 `stbl:"\"MNLZ3MeltTempDeviation\""`
 	GoodMNLZOutput         float64 `stbl:"\"GoodMNLZOutput\""`
-	MetalRetentionTime     float64 `stbl:"\"MetalRetentionTime\""`
-	Weekly                 bool    `stbl:"\"Weekly\""`
+	MetalRetentionTime     int     `stbl:"\"MetalRetentionTime\""`
+	WeekNumber             *int    `stbl:"\"WeekNumber\""`
 }
