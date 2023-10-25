@@ -32,6 +32,7 @@ type Querries struct {
 	GetGoodCastIron              string `yaml:"get_good_cast_iron"`
 	GetInletTemperatureOxidation string `yaml:"get_inlet_temperature_oxidation"`
 	GetMnlz                      string `yaml:"get_mnlz"`
+	GetMineralData               string `yaml:"get_mineral_data"`
 }
 
 type Measurings struct {
