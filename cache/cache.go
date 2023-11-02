@@ -30,7 +30,7 @@ func ReadCache() *Cache {
 		os.WriteFile(filename, nil, 0644)
 		return &cache
 	}
-
+	
 	return &cache
 }
 
