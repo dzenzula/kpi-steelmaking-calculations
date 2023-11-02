@@ -59,8 +59,8 @@ func waitForMonday() {
 	if len(missedDates) < 1 {
 		logger.Debug("There is no missed weeks.")
 	}
-	//nextMonday := getNextMonday(time.Now(), time.Local)
-	nextMonday := wait().Add(10 * time.Second)
+	nextMonday := getNextMonday(time.Now(), time.Local)
+	//nextMonday := wait().Add(10 * time.Second)
 
 	weekJob := func() {
 		job(true, missedDates)
@@ -75,8 +75,8 @@ func waitForFirstDayOfMonth() {
 	if len(missedDates) < 1 {
 		logger.Debug("There is no missed months.")
 	}
-	//nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
-	nextFirstDayOfMonth := wait()
+	nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
+	//nextFirstDayOfMonth := wait()
 
 	monthJob := func() {
 		job(false, missedDates)
