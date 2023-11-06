@@ -148,7 +148,7 @@ func getNextMonday(t time.Time, location *time.Location) time.Time {
 		daysUntilMonday = 7
 	}
 
-	nextMonday := time.Date(t.Year(), t.Month(), t.Day()+daysUntilMonday, 0, 0, 0, 0, location)
+	nextMonday := time.Date(t.Year(), t.Month(), t.Day()+daysUntilMonday, 1, 0, 0, 0, location)
 
 	logger.Info("Next week iteration wil be in:", nextMonday.Format(layout))
 	return nextMonday
@@ -161,7 +161,7 @@ func getNextFirstDayOfMonth(t time.Time, location *time.Location) time.Time {
 		nextMonth = 1
 	}
 
-	nextFirstDayOfTheMonth := time.Date(t.Year(), nextMonth, 1, 0, 0, 0, 0, location)
+	nextFirstDayOfTheMonth := time.Date(t.Year(), nextMonth, 1, 1, 0, 0, 0, location)
 
 	logger.Info("Next month iteration wil be in:", nextFirstDayOfTheMonth.Format(layout))
 	return nextFirstDayOfTheMonth
