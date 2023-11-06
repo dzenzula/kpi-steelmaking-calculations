@@ -1267,8 +1267,17 @@ func MNLZStreams(db *sql.DB, startDate string, endDate string, n int) float64 {
 func getRepackingMin(db *sql.DB, startDate string, endDate string, n int) int {
 	q := fmt.Sprintf(c.GlobalConfig.Querries.GetMnlz, startDate, endDate, c.GlobalConfig.Measurings.TmBetween, n)
 	data := database.ExecuteQuery(db, q)
-	seconds := Avg(data)
-	minutes := int(math.Floor(seconds / 60))
+	var tm float64 = 0
+	var count float64 = 0
+	for _, d := range data {
+		parsed, _ := strconv.ParseFloat(*d.Value, 64)
+		parsed /= 60
+		if parsed < 600 {
+			tm += parsed
+			count++
+		}
+	}
+	minutes := int(math.Floor(SafeDivision(tm, count)))
 
 	logger.Debug(fmt.Sprintf("Перепаковка МНЛЗ%d = %d", n, minutes))
 	return minutes
