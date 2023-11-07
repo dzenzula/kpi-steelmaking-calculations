@@ -54,35 +54,43 @@ func main() {
 }
 
 func waitForMonday() {
-	logger.InitLogger()
-	var missedDates []string = calc.GetMissingWeeks(cache.ReadCache().WeeklyDate)
-	if len(missedDates) < 1 {
-		logger.Debug("There is no missed weeks.")
-	}
-	nextMonday := getNextMonday(time.Now(), time.Local)
-	//nextMonday := wait().Add(10 * time.Second)
+	for {
+		logger.InitLogger()
+		var missedDates []string = calc.GetMissingWeeks(cache.ReadCache().WeeklyDate)
+		if len(missedDates) < 1 {
+			logger.Debug("There is no missed weeks.")
+		}
+		nextMonday := getNextMonday(time.Now(), time.Local)
+		//nextMonday := wait().Add(10 * time.Second)
 
-	weekJob := func() {
-		job(true, missedDates)
-	}
+		weekJob := func() {
+			job(true, missedDates)
+		}
 
-	time.AfterFunc(time.Until(nextMonday), weekJob)
+		duration := time.Until(nextMonday)
+		time.AfterFunc(duration, weekJob)
+		time.Sleep(duration)
+	}
 }
 
 func waitForFirstDayOfMonth() {
-	logger.InitLogger()
-	var missedDates []string = calc.GetMissingMonths(cache.ReadCache().MonthDate)
-	if len(missedDates) < 1 {
-		logger.Debug("There is no missed months.")
-	}
-	nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
-	//nextFirstDayOfMonth := wait()
+	for {
+		logger.InitLogger()
+		var missedDates []string = calc.GetMissingMonths(cache.ReadCache().MonthDate)
+		if len(missedDates) < 1 {
+			logger.Debug("There is no missed months.")
+		}
+		nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
+		//nextFirstDayOfMonth := wait()
 
-	monthJob := func() {
-		job(false, missedDates)
-	}
+		monthJob := func() {
+			job(false, missedDates)
+		}
 
-	time.AfterFunc(time.Until(nextFirstDayOfMonth), monthJob)
+		duration := time.Until(nextFirstDayOfMonth)
+		time.AfterFunc(duration, monthJob)
+		time.Sleep(duration)
+	}
 }
 
 func job(weekly bool, missedDates []string) {
@@ -132,12 +140,6 @@ func job(weekly bool, missedDates []string) {
 
 		elapsedTime := time.Since(startTime)
 		logger.Info("Run time: ", elapsedTime)
-	}
-
-	if weekly {
-		waitForMonday()
-	} else {
-		waitForFirstDayOfMonth()
 	}
 }
 
