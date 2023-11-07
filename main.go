@@ -46,9 +46,16 @@ func main() {
 		job(false, missedMonths)
 	}
 
-	waitForMonday()
-	waitForFirstDayOfMonth()
-
+	numWorkers := 2
+	tasks := []func(){
+		func() {
+			waitForMonday()
+		},
+		func() {
+			waitForFirstDayOfMonth()
+		},
+	}
+	calc.ExecuteTasks(tasks, numWorkers)
 	// Block main thread so the program will not exit immediately
 	select {}
 }
@@ -63,13 +70,9 @@ func waitForMonday() {
 		nextMonday := getNextMonday(time.Now(), time.Local)
 		//nextMonday := wait().Add(10 * time.Second)
 
-		weekJob := func() {
-			job(true, missedDates)
-		}
-
 		duration := time.Until(nextMonday)
-		time.AfterFunc(duration, weekJob)
 		time.Sleep(duration)
+		job(true, missedDates)
 	}
 }
 
@@ -83,13 +86,9 @@ func waitForFirstDayOfMonth() {
 		nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
 		//nextFirstDayOfMonth := wait()
 
-		monthJob := func() {
-			job(false, missedDates)
-		}
-
 		duration := time.Until(nextFirstDayOfMonth)
-		time.AfterFunc(duration, monthJob)
 		time.Sleep(duration)
+		job(false, missedDates)
 	}
 }
 
