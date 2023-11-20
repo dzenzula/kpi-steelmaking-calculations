@@ -62,32 +62,40 @@ func main() {
 
 func waitForMonday() {
 	for {
-		logger.InitLogger()
-		var missedDates []string = calc.GetMissingWeeks(cache.ReadCache().WeeklyDate)
-		if len(missedDates) < 1 {
-			logger.Debug("There is no missed weeks.")
-		}
 		nextMonday := getNextMonday(time.Now(), time.Local)
 		//nextMonday := wait().Add(10 * time.Second)
 
 		duration := time.Until(nextMonday)
 		time.Sleep(duration)
+
+		logger.InitLogger()
+		cacheData := cache.ReadCache()
+		var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
+		if len(missedDates) < 1 {
+			logger.Debug("There is no missed weeks.")
+			continue
+		}
+
 		job(true, missedDates)
 	}
 }
 
 func waitForFirstDayOfMonth() {
 	for {
-		logger.InitLogger()
-		var missedDates []string = calc.GetMissingMonths(cache.ReadCache().MonthDate)
-		if len(missedDates) < 1 {
-			logger.Debug("There is no missed months.")
-		}
 		nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
 		//nextFirstDayOfMonth := wait()
 
 		duration := time.Until(nextFirstDayOfMonth)
 		time.Sleep(duration)
+
+		logger.InitLogger()
+		cacheData := cache.ReadCache()
+		var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
+		if len(missedDates) < 1 {
+			logger.Debug("There is no missed months.")
+			continue
+		}
+
 		job(false, missedDates)
 	}
 }
