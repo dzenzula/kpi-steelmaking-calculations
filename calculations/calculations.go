@@ -799,7 +799,7 @@ func GoodCCMNLZOutput(db *sql.DB, startDate string, endDate string) float64 {
 
 // Выход годного КЦ Слиток
 func GoodCCIngotOutput(db *sql.DB, startDate string, endDate string) float64 {
-	res := SafeDivision(prodIngot, (bcConsumption+bcScrapConsumption+ferroalloysIngot)) * 100
+	res := SafeDivision(prodIngot, (bcConsumption+bcScrapConsumption+ferroalloysIngot/1000)) * 100
 	logger.Debug("Выход годного Слиток = Производство слитки / (Потребление чугуна слитки + Потребление лома Слиток + всего феросплавов для слитка))")
 	logger.Debug(fmt.Sprintf("%f = %f / (%f + %f + %f)", res, prodIngot, bcConsumption, bcScrapConsumption, ferroalloysIngot))
 	return res
