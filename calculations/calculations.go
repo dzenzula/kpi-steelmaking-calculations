@@ -1405,14 +1405,14 @@ func getWeightSAP(db *sql.DB, startDate string, endDate string) float64 {
 	return res
 }
 
-// Вес заготовки по SAP
+// Выход годного МНЛЗ
 func GoodMNLZOutput(db *sql.DB, startDate string, endDate string) float64 {
 	wSap := getWeightSAP(db, startDate, endDate)
 	wPps := getWeightPPS(db, startDate, endDate)
 
 	res := (SafeDivision(wSap, wPps)) * 100
 
-	logger.Debug("Вес заготовки по SAP = Вес заготовки по SAP / Вес стали по ППС")
+	logger.Debug("Выход годного МНЛЗ = Вес заготовки по SAP / Вес стали по ППС")
 	logger.Debug(fmt.Sprintf("%f = %f / %f", res, wSap, wPps))
 	return res
 }
@@ -1443,7 +1443,7 @@ func getEndTimeOfProduction(db *sql.DB, startDate string, endDate string) []mode
 	return data
 }
 
-// Время нахождения меиалла в ковше (до разливки), мин
+// Время нахождения металла в ковше (до разливки), мин
 func MetalRetentionTime(db *sql.DB, startDate string, endDate string) float64 {
 	dtn := getStartTimeOfMNLZPouring(db, startDate, endDate)
 	dtk := getEndTimeOfProduction(db, startDate, endDate)

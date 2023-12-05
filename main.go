@@ -71,12 +71,9 @@ func waitForMonday() {
 		logger.InitLogger()
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
-		if len(missedDates) < 1 {
-			logger.Debug("There is no missed weeks.")
-			continue
+		if len(missedDates) > 0 {
+			job(false, missedDates)
 		}
-
-		job(true, missedDates)
 	}
 }
 
@@ -91,12 +88,9 @@ func waitForFirstDayOfMonth() {
 		logger.InitLogger()
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
-		if len(missedDates) < 1 {
-			logger.Debug("There is no missed months.")
-			continue
+		if len(missedDates) > 0 {
+			job(false, missedDates)
 		}
-
-		job(false, missedDates)
 	}
 }
 
@@ -153,11 +147,16 @@ func job(weekly bool, missedDates []string) {
 // Get the next monday's date
 func getNextMonday(t time.Time, location *time.Location) time.Time {
 	daysUntilMonday := (int(time.Monday) - int(t.Weekday()) + 7) % 7
+	nextYear := t.Year()
+	nextMonth := t.Month() + 1
+	if nextMonth > 12 {
+		nextYear += 1
+	}
 	if daysUntilMonday == 0 {
 		daysUntilMonday = 7
 	}
 
-	nextMonday := time.Date(t.Year(), t.Month(), t.Day()+daysUntilMonday, 1, 0, 0, 0, location)
+	nextMonday := time.Date(nextYear, t.Month(), t.Day()+daysUntilMonday, 1, 0, 0, 0, location)
 
 	logger.Info("Next week iteration wil be in:", nextMonday.Format(layout))
 	return nextMonday
@@ -166,11 +165,13 @@ func getNextMonday(t time.Time, location *time.Location) time.Time {
 // Get the next first day of the month's date
 func getNextFirstDayOfMonth(t time.Time, location *time.Location) time.Time {
 	nextMonth := t.Month() + 1
+	nextYear := t.Year()
 	if nextMonth > 12 {
 		nextMonth = 1
+		nextYear += 1
 	}
 
-	nextFirstDayOfTheMonth := time.Date(t.Year(), nextMonth, 1, 1, 0, 0, 0, location)
+	nextFirstDayOfTheMonth := time.Date(nextYear, nextMonth, 1, 1, 0, 0, 0, location)
 
 	logger.Info("Next month iteration wil be in:", nextFirstDayOfTheMonth.Format(layout))
 	return nextFirstDayOfTheMonth

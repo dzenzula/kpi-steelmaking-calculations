@@ -57,6 +57,7 @@ func GetMissingWeeks(weekDateTracker string) []string {
 		return nil
 	}
 
+	logger.Debug("Date from weekDateTracker:", parsedWeek.Format(layout))
 	missingWeeks := []string{}
 
 	for {
@@ -70,6 +71,12 @@ func GetMissingWeeks(weekDateTracker string) []string {
 		parsedWeek = nextWeek
 	}
 
+	if len(missingWeeks) > 0 {
+		logger.Debug("Found missing weeks:", missingWeeks)
+	} else {
+		logger.Debug("No missing weeks found.")
+	}
+
 	return missingWeeks
 }
 
@@ -81,6 +88,7 @@ func GetMissingMonths(monthDateTracker string) []string {
 		return nil
 	}
 
+	logger.Debug("Date from monthDateTracker:", parsedMonth.Format(layout))
 	missingMonths := []string{}
 
 	for {
@@ -92,6 +100,12 @@ func GetMissingMonths(monthDateTracker string) []string {
 
 		missingMonths = append(missingMonths, nextMonth.Format(layout))
 		parsedMonth = nextMonth
+	}
+
+	if len(missingMonths) > 0 {
+		logger.Debug("Found missing weeks:", missingMonths)
+	} else {
+		logger.Debug("No missing weeks found.")
 	}
 
 	return missingMonths
