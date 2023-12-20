@@ -13,7 +13,12 @@ import (
 
 var weeklyReport = new(models.Report)
 var monthlyReport = new(models.Report)
+var yearlyReport = new(models.Report)
 var layout string = "2006-01-02 15:04:05"
+
+const week string = "week"
+const month string = "month"
+const year string = "year"
 
 func main() {
 	logger.InitLogger()
@@ -26,28 +31,41 @@ func main() {
 		nextMon := getNextMonday(time.Now(), localTime.Location())
 		date := time.Date(localTime.Year(), localTime.Month(), nextMon.Day()-7, 0, 0, 0, 0, localTime.Location()).Format(layout)
 		cacheData.WeeklyDate = date
-		cache.WriteCache(nil, &date)
+		cache.WriteCache(nil, &date, nil)
 	}
 	if cacheData.MonthDate == "" {
 		nextMon := getNextFirstDayOfMonth(time.Now(), localTime.Location())
 		date := time.Date(localTime.Year(), nextMon.Month()-1, nextMon.Day(), 0, 0, 0, 0, localTime.Location()).Format(layout)
 		cacheData.MonthDate = date
-		cache.WriteCache(&date, nil)
+		cache.WriteCache(&date, nil, nil)
+	}
+	if cacheData.YearDate == "" {
+		date := time.Date(localTime.Year()-2, 1, 1, 0, 0, 0, 0, localTime.Location()).Format(layout)
+		cacheData.YearDate = date
+		cache.WriteCache(nil, nil, &date)
 	}
 
 	missedWeeks := calc.GetMissingWeeks(cacheData.WeeklyDate)
 	if len(missedWeeks) > 0 {
 		logger.Info("There is missed weeks: ", missedWeeks)
-		job(true, missedWeeks)
+		job(week, missedWeeks)
 	}
 	missedMonths := calc.GetMissingMonths(cacheData.MonthDate)
 	if len(missedMonths) > 0 {
 		logger.Info("There is missed months: ", missedMonths)
-		job(false, missedMonths)
+		job(month, missedMonths)
+	}
+	missedYears := calc.GetMissingYears(cacheData.YearDate)
+	if len(missedYears) > 0 {
+		logger.Info("There is missed years: ", missedYears)
+		job(year, missedYears)
 	}
 
-	numWorkers := 2
+	numWorkers := 3
 	tasks := []func(){
+		func() {
+			waitForYear()
+		},
 		func() {
 			waitForMonday()
 		},
@@ -56,6 +74,7 @@ func main() {
 		},
 	}
 	calc.ExecuteTasks(tasks, numWorkers)
+
 	// Block main thread so the program will not exit immediately
 	select {}
 }
@@ -72,7 +91,7 @@ func waitForMonday() {
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
 		if len(missedDates) > 0 {
-			job(false, missedDates)
+			job(week, missedDates)
 		}
 	}
 }
@@ -89,17 +108,76 @@ func waitForFirstDayOfMonth() {
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
 		if len(missedDates) > 0 {
-			job(false, missedDates)
+			job(month, missedDates)
 		}
 	}
 }
 
-func job(weekly bool, missedDates []string) {
+func waitForYear() {
+	for {
+		logger.InitLogger()
+		updateYearJob()
+		duration := time.Until(waitDay())
+		time.Sleep(duration)
+
+		/*nextYear := getNextYear(time.Now(), time.Local)
+
+		duration := time.Until(nextYear)
+		time.Sleep(duration)
+
+		logger.InitLogger()
+		cacheData := cache.ReadCache()
+		var missedDates []string = calc.GetMissingYears(cacheData.MonthDate)
+		if len(missedDates) > 0 {
+			job(year, missedDates)
+		}*/
+	}
+}
+
+func updateYearJob() {
+	cacheData := cache.ReadCache()
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+	parsedCache, _ := time.Parse(layout, cacheData.YearDate)
+	todayString := today.Format(layout)
+
+	logger.Info("Running year update job", todayString)
+
+	pgdb := database.ConnectPgData()
+	pgdbReports := database.ConnectPgReports()
+	msdb := database.ConnectMs()
+
+	if cacheData.YearId != 0 {
+		yearlyReport.Id = cacheData.YearId
+	}
+	yearlyReport.Date = cacheData.YearDate
+	numyear := parsedCache.Year()
+	yearlyReport.ReportType = fmt.Sprintf("%d Year", numyear)
+	calc.CacheInit(pgdb, cacheData.YearDate, todayString)
+	calculations(pgdb, cacheData.YearDate, todayString, yearlyReport)
+	yearlyReport.Id = database.UpdatePgReport(pgdbReports, *yearlyReport)
+	//database.UpdateMsReport(msdb, *yearlyReport)
+
+	if today.Year() != parsedCache.Year() {
+		cache.WriteCacheId(0)
+	} else {
+		cache.WriteCacheId(yearlyReport.Id)
+	}
+
+	pgdb.Close()
+	pgdbReports.Close()
+	msdb.Close()
+	logger.Info("Calculations is done!")
+}
+
+func job(jobType string, missedDates []string) {
 	logger.Info(fmt.Sprintf("Running %s job at %v\n", func() string {
-		if weekly {
+		if jobType == week {
 			return "weekly"
+		} else if jobType == month {
+			return "monthly"
 		}
-		return "monthly"
+		return "year"
+
 	}(), time.Now()))
 
 	for _, date := range missedDates {
@@ -107,10 +185,12 @@ func job(weekly bool, missedDates []string) {
 		parsedDate, _ := time.Parse(layout, date)
 
 		// Определение даты старта в зависимости от типа задачи
-		if weekly {
+		if jobType == week {
 			parsedDate = parsedDate.AddDate(0, 0, -7)
-		} else {
+		} else if jobType == month {
 			parsedDate = parsedDate.AddDate(0, -1, 0)
+		} else {
+			parsedDate = parsedDate.AddDate(-1, 0, 0)
 		}
 		startDate := parsedDate.Format(layout)
 		msdb := database.ConnectMs()
@@ -119,19 +199,27 @@ func job(weekly bool, missedDates []string) {
 
 		calc.CacheInit(pgdb, startDate, date)
 
-		if weekly {
+		if jobType == week {
 			weeklyReport.Date = startDate
-			_, week := parsedDate.ISOWeek()
-			weeklyReport.WeekNumber = &week
+			_, numweek := parsedDate.ISOWeek()
+			weeklyReport.ReportType = fmt.Sprintf("%d Week", numweek)
 			calculations(pgdb, startDate, date, weeklyReport)
 			database.InsertPgReport(pgdbReports, *weeklyReport)
-			cache.WriteCache(nil, &date)
-		} else {
+			cache.WriteCache(nil, &date, nil)
+		} else if jobType == month {
 			monthlyReport.Date = startDate
-			monthlyReport.WeekNumber = nil
+			monthlyReport.ReportType = parsedDate.Month().String()
 			calculations(pgdb, startDate, date, monthlyReport)
 			database.InsertPgReport(pgdbReports, *monthlyReport)
-			cache.WriteCache(&date, nil)
+			cache.WriteCache(&date, nil, nil)
+		} else {
+			yearlyReport.Date = startDate
+			numyear := parsedDate.Year()
+			yearlyReport.ReportType = fmt.Sprintf("%d Year", numyear)
+			calculations(pgdb, startDate, date, yearlyReport)
+			database.InsertPgReport(pgdbReports, *yearlyReport)
+			//database.InsertMsReport(msdb, *yearlyReport)
+			cache.WriteCache(nil, nil, &date)
 		}
 
 		msdb.Close()
@@ -177,13 +265,16 @@ func getNextFirstDayOfMonth(t time.Time, location *time.Location) time.Time {
 	return nextFirstDayOfTheMonth
 }
 
-func wait() time.Time {
-	duration := time.Until(time.Now().Truncate(1 * time.Minute).Add(1 * time.Minute))
-	t := time.Now().Add(duration)
+func waitDay() time.Time {
+	now := time.Now().Local().Truncate(24 * time.Hour)
+	nextDay := now.Add(24 * time.Hour)
 
-	logger.Info("Time until the next iteration:", t)
+	duration := time.Until(nextDay)
+	waitTime := time.Now().Add(duration)
 
-	return t
+	logger.Info("Time until the next iteration:", waitTime)
+
+	return waitTime
 }
 
 func calculations(pgdb *sql.DB, startDate string, endDate string, report *models.Report) {

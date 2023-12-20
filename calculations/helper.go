@@ -111,6 +111,36 @@ func GetMissingMonths(monthDateTracker string) []string {
 	return missingMonths
 }
 
+func GetMissingYears(yearDateTracker string) []string {
+	currentTime := time.Now()
+	parsedYear, err := time.Parse(layout, yearDateTracker)
+	if err != nil {
+		logger.Error("Error parsing the year date tracker:", err.Error())
+	}
+
+	logger.Debug("Date from yearDateTracker:", parsedYear.Format(layout))
+	missingYears := []string{}
+
+	for {
+		nextYear := parsedYear.AddDate(1, 0, 0)
+
+		if nextYear.After(currentTime) {
+			break
+		}
+
+		missingYears = append(missingYears, nextYear.Format(layout))
+		parsedYear = nextYear
+	}
+
+	if len(missingYears) > 0 {
+		logger.Debug("Found missing years:", missingYears)
+	} else {
+		logger.Debug("No missing years found.")
+	}
+
+	return missingYears
+}
+
 func SafeDivision(a, b float64) float64 {
 	if b != 0 {
 		return a / b

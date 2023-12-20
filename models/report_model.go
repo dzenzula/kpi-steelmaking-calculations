@@ -1,7 +1,7 @@
 package models
 
 type Report struct {
-	//Id                     int     `stbl:"Id, PRIMARY_KEY, AUTO_INCREMENT\""`
+	Id                     int     `stbl:"\"Id\", PRIMARY_KEY, SERIAL"`
 	Date                   string  `stbl:"\"Date\""`
 	CastIronMelting        float64 `stbl:"\"CastIronMelting\""`
 	ScrapMelting           float64 `stbl:"\"ScrapMelting\""`
@@ -57,5 +57,5 @@ type Report struct {
 	MNLZ3MeltTempDeviation float64 `stbl:"\"MNLZ3MeltTempDeviation\""`
 	GoodMNLZOutput         float64 `stbl:"\"GoodMNLZOutput\""`
 	MetalRetentionTime     int     `stbl:"\"MetalRetentionTime\""`
-	WeekNumber             *int    `stbl:"\"WeekNumber\""`
+	ReportType             string  `stbl:"\"ReportType\""`
 }

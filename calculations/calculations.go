@@ -9,7 +9,6 @@ import (
 	"main/models"
 	"math"
 	"strconv"
-	"strings"
 
 	"gonum.org/v1/gonum/floats"
 )
@@ -1153,7 +1152,7 @@ func getEndSeries(db *sql.DB, startDate string, endDate string, i int) []float64
 		}
 	}
 
-	logger.Debug(fmt.Sprintf("Конец серии МНЛЗ%d = %f", i, res))
+	//logger.Debug(fmt.Sprintf("Конец серии МНЛЗ%d = %f", i, res))
 	return res
 }
 
@@ -1170,7 +1169,7 @@ func getSerelization(db *sql.DB, startDate string, endDate string, i int) []floa
 		}
 	}
 
-	logger.Debug(fmt.Sprintf("Серийность МНЛЗ%d = %f", i, res))
+	//logger.Debug(fmt.Sprintf("Серийность МНЛЗ%d = %f", i, res))
 	return res
 }
 
@@ -1305,7 +1304,7 @@ func getSteelGrades(db *sql.DB, startDate string, endDate string, n int) []*stri
 		}
 	}
 
-	logger.Debug(fmt.Sprintf("Марки стали МНЛЗ%d = %s", n, strings.Join(gradeStrings, ", ")))
+	//logger.Debug(fmt.Sprintf("Марки стали МНЛЗ%d = %s", n, strings.Join(gradeStrings, ", ")))
 	return grades
 }
 
@@ -1323,6 +1322,7 @@ func getMeltingMnlzCount(db *sql.DB, startDate string, endDate string, n int) fl
 func getTemperatureMnlz(db *sql.DB, startDate string, endDate string, n int) float64 {
 	var withinCount int
 	var valueArrays [][]*float64
+	var res float64
 	idTempList := []int{
 		c.GlobalConfig.Measurings.Temperature1,
 		c.GlobalConfig.Measurings.Temperature2,
@@ -1351,23 +1351,29 @@ func getTemperatureMnlz(db *sql.DB, startDate string, endDate string, n int) flo
 		if steel == nil {
 			continue
 		}
-		if i >= len(averages) {
+		if i >= len(averages) || i >= len(serialization) {
+			logger.Error("Несостыковка по колличеству данных")
 			break
 		}
 		min, max := FindSteelGrade(*steel)
-		logger.Debug(fmt.Sprintf("Марка стали = %s, Min = %d, Max = %d", *steel, min, max))
-		if averages[i] != nil {
+		//logger.Debug(fmt.Sprintf("Марка стали = %s, Min = %d, Max = %d", *steel, min, max))
+		/*if averages[i] != nil {
 			logger.Debug(fmt.Sprintf("Серийность = %f, Температура = %f", serialization[i], *averages[i]))
 		} else {
 			logger.Debug(fmt.Sprintf("Серийность = %f, Температура = nil", serialization[i]))
-		}
+		}*/
 		if serialization[i] == 1.0 || averages[i] == nil || (*averages[i] < float64(max) && *averages[i] > float64(min)) {
 			withinCount++
 		}
 	}
 
 	meltCount := getMeltingMnlzCount(db, startDate, endDate, n)
-	res := 1.0 - SafeDivision(float64(withinCount), meltCount)
+	dilimitil := SafeDivision(float64(withinCount), meltCount)
+	if dilimitil == 0 {
+		res = 0
+	} else {
+		res = 1.0 - dilimitil
+	}
 
 	logger.Debug(fmt.Sprintf("Плавки с отклонением по температуре МНЛЗ%d = кол-во норм / кол-во плавок", n))
 	logger.Debug(fmt.Sprintf("%f = 1 - %d / %f", res, withinCount, meltCount))

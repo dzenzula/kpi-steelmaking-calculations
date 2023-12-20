@@ -131,3 +131,38 @@ func InsertPgReport(db *sql.DB, report models.Report) {
 
 	logger.Info("Data inserted in report PostgreSQL!")
 }
+
+func UpdateMsReport(db *sql.DB, report models.Report) {
+	runner := squirrel.NewStmtCacheProxy(db)
+	r := structable.New(runner, c.GlobalConfig.TypePG).Bind("[dbo].[KpiReport]", &report)
+	err := r.Update()
+	if err != nil {
+		logger.Error(err)
+		r.Insert()
+		logger.Info("Current year data inserted in MsSQL!")
+		return
+	}
+
+	logger.Info("Current year data updated in MsSQL!")
+}
+
+func UpdatePgReport(db *sql.DB, report models.Report) int {
+	runner := squirrel.NewStmtCacheProxy(db)
+	r := structable.New(runner, c.GlobalConfig.TypePG).Bind("reports.\"kpi-steelmaking-reports\"", &report)
+
+	if report.Id == 0 {
+		err := r.Insert()
+		if err != nil {
+			logger.Error(err)
+		}
+		logger.Info("Current year data inserted in PostgreSQL!")
+	} else {
+		err := r.Update()
+		if err != nil {
+			logger.Error(err)
+		}
+		logger.Info("Current year data updated in PostgreSQL!")
+	}
+
+	return report.Id
+}
