@@ -1191,7 +1191,7 @@ func CastingStopperSerial(db *sql.DB, startDate string, endDate string) float64 
 		endSeries := getEndSeries(db, startDate, endDate, n)
 		serelization := getSerelization(db, startDate, endDate, n)
 
-		if len(averages) == len(endSeries) {
+		if len(averages) == len(endSeries) && len(endSeries) == len(serelization) {
 			for i, v := range averages {
 				if v != nil && endSeries[i] == 1 && *v == 0 {
 					res += serelization[i]
@@ -1210,7 +1210,7 @@ func CastingStopperSerial(db *sql.DB, startDate string, endDate string) float64 
 // Функция для расчета открытой серийности
 func calculateOpenSerial(averages []*float64, endSeries []float64, serelization []float64) float64 {
 	count, res := 0.0, 0.0
-	if len(averages) == len(endSeries) {
+	if len(averages) == len(endSeries) && len(endSeries) == len(serelization) {
 		for i, v := range averages {
 			if v != nil && endSeries[i] == 1 && *v > 0 {
 				res += serelization[i]
