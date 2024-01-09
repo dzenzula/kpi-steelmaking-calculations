@@ -142,9 +142,7 @@ func updateYearJob() {
 
 	logger.Info("Running year update job", todayString)
 
-	pgdb := database.ConnectPgData()
-	pgdbReports := database.ConnectPgReports()
-	msdb := database.ConnectMs()
+	pgdb := database.ConnectPg()
 
 	if cacheData.YearId != 0 {
 		yearlyReport.Id = cacheData.YearId
@@ -154,7 +152,7 @@ func updateYearJob() {
 	yearlyReport.ReportType = fmt.Sprintf("%d Year", numyear)
 	calc.CacheInit(pgdb, cacheData.YearDate, todayString)
 	calculations(pgdb, cacheData.YearDate, todayString, yearlyReport)
-	yearlyReport.Id = database.UpdatePgReport(pgdbReports, *yearlyReport)
+	yearlyReport.Id = database.UpdatePgReport(pgdb, *yearlyReport)
 	//database.UpdateMsReport(msdb, *yearlyReport)
 
 	if today.Year() != parsedCache.Year() {
@@ -164,8 +162,6 @@ func updateYearJob() {
 	}
 
 	pgdb.Close()
-	pgdbReports.Close()
-	msdb.Close()
 	logger.Info("Calculations is done!")
 }
 
@@ -193,9 +189,7 @@ func job(jobType string, missedDates []string) {
 			parsedDate = parsedDate.AddDate(-1, 0, 0)
 		}
 		startDate := parsedDate.Format(layout)
-		msdb := database.ConnectMs()
-		pgdb := database.ConnectPgData()
-		pgdbReports := database.ConnectPgReports()
+		pgdb := database.ConnectPg()
 
 		calc.CacheInit(pgdb, startDate, date)
 
@@ -204,27 +198,25 @@ func job(jobType string, missedDates []string) {
 			_, numweek := parsedDate.ISOWeek()
 			weeklyReport.ReportType = fmt.Sprintf("%d Week", numweek)
 			calculations(pgdb, startDate, date, weeklyReport)
-			database.InsertPgReport(pgdbReports, *weeklyReport)
+			database.InsertPgReport(pgdb, *weeklyReport)
 			cache.WriteCache(nil, &date, nil)
 		} else if jobType == month {
 			monthlyReport.Date = startDate
 			monthlyReport.ReportType = parsedDate.Month().String()
 			calculations(pgdb, startDate, date, monthlyReport)
-			database.InsertPgReport(pgdbReports, *monthlyReport)
+			database.InsertPgReport(pgdb, *monthlyReport)
 			cache.WriteCache(&date, nil, nil)
 		} else {
 			yearlyReport.Date = startDate
 			numyear := parsedDate.Year()
 			yearlyReport.ReportType = fmt.Sprintf("%d Year", numyear)
 			calculations(pgdb, startDate, date, yearlyReport)
-			database.InsertPgReport(pgdbReports, *yearlyReport)
+			database.InsertPgReport(pgdb, *yearlyReport)
 			//database.InsertMsReport(msdb, *yearlyReport)
 			cache.WriteCache(nil, nil, &date)
 		}
 
-		msdb.Close()
 		pgdb.Close()
-		pgdbReports.Close()
 		logger.Info("Calculations is done!")
 
 		elapsedTime := time.Since(startTime)

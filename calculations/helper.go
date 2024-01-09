@@ -103,9 +103,9 @@ func GetMissingMonths(monthDateTracker string) []string {
 	}
 
 	if len(missingMonths) > 0 {
-		logger.Debug("Found missing weeks:", missingMonths)
+		logger.Debug("Found missing months:", missingMonths)
 	} else {
-		logger.Debug("No missing weeks found.")
+		logger.Debug("No missing months found.")
 	}
 
 	return missingMonths

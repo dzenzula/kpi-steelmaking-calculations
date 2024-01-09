@@ -133,9 +133,7 @@ type SteelMark struct {
 }
 
 type Config struct {
-	ConStringMsDb      ConStringMS `yaml:"mssql_database"`
 	ConStringPgDb      ConStringPG `yaml:"postgres_data"`
-	ConStringPgReports ConStringPG `yaml:"postgres_reports"`
 	Querries           Querries    `yaml:"querries"`
 	Measurings         Measurings  `yaml:"measurings"`
 	CachePath          string      `yaml:"cache"`
