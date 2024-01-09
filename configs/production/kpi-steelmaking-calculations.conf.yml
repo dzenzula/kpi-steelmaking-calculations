@@ -1,23 +1,9 @@
-mssql_database:
-  server: KRR-TST-PAHWL02
-  user_id: EUROPE\%LOGIN%
-  password: "%PASSWORD%"
-  database: KRR-PA-DEV-Development
-
-postgres_reports:
-  host: KRR-SQL-PSGRE00
-  port: 5432
-  user: "%LOGIN%"
-  password: "%PASSWORD%"
-  dbname: krr-pa-analytics-data
-  sslmode: disable  
-
 postgres_data:
   host: KRR-SQL-PSGRE00
   port: 5432
   user: "%LOGIN%"
   password: "%PASSWORD%"
-  dbname: krr-pa-raw-data
+  dbname: krr-pa-analytics-data
   sslmode: disable
 
 cache: "kpi-steelmaking-calculations.cache.yml"
@@ -25,23 +11,22 @@ logger: "debug" ##"info"
 type_ms: "mssql"
 type_pg: "postgres"
 
-
 querries:
-  consumption_mnlz: "SELECT * FROM public.get_cast_iron_consumption_mnlz('%s', '%s')"
-  consumption_ingot: "SELECT * FROM public.get_cast_iron_consumption_ingot('%s', '%s')"
-  meltdowns_onrs: "SELECT * FROM public.get_number_of_meltdowns_onrs('%s', '%s')"
-  scrap_consumption_mnlz: "SELECT * FROM public.get_scrap_consumption_mnlz('%s', '%s')"
-  scrap_consumption_ingot: "SELECT * FROM public.get_scrap_consumption_ingot('%s', '%s')"
-  get_data: "SELECT * FROM public.get_data('%s', '%s', '%d')"
-  get_data_greater_than_zero: "SELECT * FROM public.get_data_greater_than_zero('%s', '%s', '%d')"
-  get_slag_truncation: "SELECT * FROM public.get_slag_truncation('%s', '%s')"
-  get_pherroalloy_mnlz: "SELECT * FROM public.get_pherroalloy_mnlz('%s', '%s', '%d')"
-  get_pherroalloy_ingot: "SELECT * FROM public.get_pherroalloy_ingot('%s', '%s', '%d')"
-  get_upk: "SELECT * FROM public.get_upk('%s', '%s', '%d', '%d')"
-  get_good_cast_iron: "SELECT * FROM public.get_good_cast_iron('%s', '%s', '%d')"
-  get_inlet_temperature_oxidation: "SELECT * FROM public.get_inlet_temperature_oxidation('%s', '%s', '%d', '%d')"
-  get_mnlz: "SELECT * FROM public.get_mnlz('%s', '%s', '%d', '%d')"
-  get_mineral_data: "SELECT * FROM public.get_mineral_data('%s', '%s', '%d')"
+  consumption_mnlz: "SELECT * FROM \"raw-data\".get_cast_iron_consumption_mnlz('%s', '%s')"
+  consumption_ingot: "SELECT * FROM \"raw-data\".get_cast_iron_consumption_ingot('%s', '%s')"
+  meltdowns_onrs: "SELECT * FROM \"raw-data\".get_number_of_meltdowns_onrs('%s', '%s')"
+  scrap_consumption_mnlz: "SELECT * FROM \"raw-data\".get_scrap_consumption_mnlz('%s', '%s')"
+  scrap_consumption_ingot: "SELECT * FROM \"raw-data\".get_scrap_consumption_ingot('%s', '%s')"
+  get_data: "SELECT * FROM \"raw-data\".get_data('%s', '%s', '%d')"
+  get_data_greater_than_zero: "SELECT * FROM \"raw-data\".get_data_greater_than_zero('%s', '%s', '%d')"
+  get_slag_truncation: "SELECT * FROM \"raw-data\".get_slag_truncation('%s', '%s')"
+  get_pherroalloy_mnlz: "SELECT * FROM \"raw-data\".get_pherroalloy_mnlz('%s', '%s', '%d')"
+  get_pherroalloy_ingot: "SELECT * FROM \"raw-data\".get_pherroalloy_ingot('%s', '%s', '%d')"
+  get_upk: "SELECT * FROM \"raw-data\".get_upk('%s', '%s', '%d', '%d')"
+  get_good_cast_iron: "SELECT * FROM \"raw-data\".get_good_cast_iron('%s', '%s', '%d')"
+  get_inlet_temperature_oxidation: "SELECT * FROM \"raw-data\".get_inlet_temperature_oxidation('%s', '%s', '%d', '%d')"
+  get_mnlz: "SELECT * FROM \"raw-data\".get_mnlz('%s', '%s', '%d', '%d')"
+  get_mineral_data: "SELECT * FROM \"raw-data\".get_mineral_data('%s', '%s', '%d')"
 
 measurings:
   fl_heat_lf: 77851922
