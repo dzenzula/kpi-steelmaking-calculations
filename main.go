@@ -61,33 +61,32 @@ func main() {
 		job(year, missedYears)
 	}
 
-	numWorkers := 3
-	tasks := []func(){
-		func() {
-			waitForYear()
-		},
-		func() {
-			waitForMonday()
-		},
-		func() {
-			waitForFirstDayOfMonth()
-		},
-	}
-	calc.ExecuteTasks(tasks, numWorkers)
-
-	// Block main thread so the program will not exit immediately
-	select {}
+	CalculationService()
 }
 
-func waitForMonday() {
+func CalculationService() {
 	for {
-		nextMonday := getNextMonday(time.Now(), time.Local)
-		//nextMonday := wait().Add(10 * time.Second)
-
-		duration := time.Until(nextMonday)
+		logger.InitLogger()
+		updateYearJob()
+		duration := time.Until(waitDay())
 		time.Sleep(duration)
 
-		logger.InitLogger()
+		if time.Now().Weekday() == time.Monday {
+			FirstDayOfWeek()
+		}
+
+		if time.Now().Day() == 1 {
+			FirstDayOfMonth()
+		}
+
+		if time.Now().YearDay() == 1 {
+			FirstDayOfYear()
+		}
+	}
+}
+
+func FirstDayOfWeek() {
+	for {
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
 		if len(missedDates) > 0 {
@@ -96,15 +95,8 @@ func waitForMonday() {
 	}
 }
 
-func waitForFirstDayOfMonth() {
+func FirstDayOfMonth() {
 	for {
-		nextFirstDayOfMonth := getNextFirstDayOfMonth(time.Now(), time.Local)
-		//nextFirstDayOfMonth := wait()
-
-		duration := time.Until(nextFirstDayOfMonth)
-		time.Sleep(duration)
-
-		logger.InitLogger()
 		cacheData := cache.ReadCache()
 		var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
 		if len(missedDates) > 0 {
@@ -113,24 +105,13 @@ func waitForFirstDayOfMonth() {
 	}
 }
 
-func waitForYear() {
+func FirstDayOfYear() {
 	for {
-		logger.InitLogger()
-		updateYearJob()
-		duration := time.Until(waitDay())
-		time.Sleep(duration)
-
-		/*nextYear := getNextYear(time.Now(), time.Local)
-
-		duration := time.Until(nextYear)
-		time.Sleep(duration)
-
-		logger.InitLogger()
 		cacheData := cache.ReadCache()
-		var missedDates []string = calc.GetMissingYears(cacheData.MonthDate)
+		var missedDates []string = calc.GetMissingYears(cacheData.YearDate)
 		if len(missedDates) > 0 {
-			job(year, missedDates)
-		}*/
+			job(month, missedDates)
+		}
 	}
 }
 
@@ -153,13 +134,6 @@ func updateYearJob() {
 	calc.CacheInit(pgdb, cacheData.YearDate, todayString)
 	calculations(pgdb, cacheData.YearDate, todayString, yearlyReport)
 	yearlyReport.Id = database.UpdatePgReport(pgdb, *yearlyReport)
-	//database.UpdateMsReport(msdb, *yearlyReport)
-
-	if today.Year() != parsedCache.Year() {
-		cache.WriteCacheId(0)
-	} else {
-		cache.WriteCacheId(yearlyReport.Id)
-	}
 
 	pgdb.Close()
 	logger.Info("Calculations is done!")
