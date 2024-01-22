@@ -68,8 +68,6 @@ func CalculationService() {
 	for {
 		logger.InitLogger()
 		updateYearJob()
-		duration := time.Until(waitDay())
-		time.Sleep(duration)
 
 		if time.Now().Weekday() == time.Monday {
 			FirstDayOfWeek()
@@ -82,6 +80,9 @@ func CalculationService() {
 		if time.Now().YearDay() == 1 {
 			FirstDayOfYear()
 		}
+
+		duration := time.Until(waitDay())
+		time.Sleep(duration)
 	}
 }
 
