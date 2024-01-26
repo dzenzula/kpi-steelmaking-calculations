@@ -87,32 +87,26 @@ func CalculationService() {
 }
 
 func FirstDayOfWeek() {
-	for {
-		cacheData := cache.ReadCache()
-		var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
-		if len(missedDates) > 0 {
-			job(week, missedDates)
-		}
+	cacheData := cache.ReadCache()
+	var missedDates []string = calc.GetMissingWeeks(cacheData.WeeklyDate)
+	if len(missedDates) > 0 {
+		job(week, missedDates)
 	}
 }
 
 func FirstDayOfMonth() {
-	for {
-		cacheData := cache.ReadCache()
-		var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
-		if len(missedDates) > 0 {
-			job(month, missedDates)
-		}
+	cacheData := cache.ReadCache()
+	var missedDates []string = calc.GetMissingMonths(cacheData.MonthDate)
+	if len(missedDates) > 0 {
+		job(month, missedDates)
 	}
 }
 
 func FirstDayOfYear() {
-	for {
-		cacheData := cache.ReadCache()
-		var missedDates []string = calc.GetMissingYears(cacheData.YearDate)
-		if len(missedDates) > 0 {
-			job(month, missedDates)
-		}
+	cacheData := cache.ReadCache()
+	var missedDates []string = calc.GetMissingYears(cacheData.YearDate)
+	if len(missedDates) > 0 {
+		job(month, missedDates)
 	}
 }
 
@@ -137,7 +131,7 @@ func updateYearJob() {
 	yearlyReport.Id = database.UpdatePgReport(pgdb, *yearlyReport)
 
 	pgdb.Close()
-	logger.Info("Calculations is done!")
+	logger.Info("Year update is done!")
 }
 
 func job(jobType string, missedDates []string) {
